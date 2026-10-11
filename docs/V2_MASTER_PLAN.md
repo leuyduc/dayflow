@@ -45,7 +45,7 @@ Last verified facts (read-only audit + later scoped G1-B actions):
 - `dayflow-dev` (uid 1001) created with locked password and restricted home; fresh SSH login via its dedicated key was successful; root remained reachable; SSH/Nginx/Docker/UFW/cloudflared services active after controlled SSH reload.
 - G1-A: previously exposed root SSH public key remains enabled (user deferred revocation). SECURITY BLOCKER for claiming overall G1 pass or production-ready.
 - G1-B: account/login partially passed; complete negative privilege testing blocked by MCP command policy. The existing root-authorized key is still accessible through Windows remote automation.
-- G1-C: not started. Need proof developer/agent cannot access production data, keys, privileged sockets and local/internal service endpoints. Check resource budgets and workspace isolation; consider separate VM if same-host boundaries inadequate.
+- G1-C: AUDITED / NOT PASSED (2026-10-12). The developer account can establish no-payload TCP connections to 3 pre-existing loopback services, including a database-like endpoint; file-permission negative tests were blocked. A separate VM/host or proven namespace/sandbox with restricted egress and no production mounts is required. See `docs/V2_G1C_ISOLATION_AUDIT.md`. Check resource budgets and workspace isolation; consider separate VM if same-host boundaries inadequate.
 - G1-D: not started. After G1-C and scoped approval, install OpenCode under developer identity, select/test Muse, bind OpenCode only to localhost, connect Windows via SSH tunnel; no public agent port.
 - G1-E: not started. Move/root admin credentials out of agent-accessible automation identity; validate rollback/console and service integrity; close G1 only when all relevant requirements meet acceptance.
 
@@ -89,4 +89,4 @@ Muse/OpenCode **independently manages its own context, session and cache**. No r
 | Stale ChatGPT context/cache | PROCESS | Versioned `.chatgpt/` checkpoint, live reconciliation and append-only journal; Muse unaffected |
 
 ## 9. Current conclusion
-As of this checkpoint, the project is **still before autonomous Muse execution on Linux**. The next safe substantive action is G1-C isolation assessment and remediation of the deferred G1-A root key. Coding Gates G2–G9 are not started. Do not infer PASS from documentation alone.
+As of this checkpoint, the project is **still before autonomous Muse execution on Linux**. The next safe substantive action is operator approval for G1-C isolation remediation with verified egress restrictions and remediation of the deferred G1-A root key. Coding Gates G2–G9 are not started. Do not infer PASS from documentation alone.
