@@ -16,7 +16,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G0 — Linux audit | AUDITED | Ubuntu Linux host, existing production services, Docker, Nginx, Node present; OpenCode not found in root PATH as of audit; capacity and isolation risk noted |
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
-| G3 — Authentication + database | PARTIAL DEVELOPMENT IMPLEMENTATION / NOT ACCEPTED | `feat/g3-auth-db` at `d97343d`: auth API, Drizzle schema, PGlite constraints, 21/21 tests and CI success. Real TCP PostgreSQL integration, bootstrap, G3 signoff blocked by absent isolated DB |
+| G3 — Authentication + database | REAL POSTGRESQL TESTS + CI PASS / REVIEW PENDING | `feat/g3-auth-db` at `a3074d9`: 21 tests, real HTTP/pg.Pool/migration/bootstrap/authorization against PostgreSQL 17, two GitHub Actions jobs SUCCESS; G3 operator acceptance not yet granted |
 | G4 — Task UI/API | NOT STARTED | |
 | G5 — Two-device online sync | NOT STARTED | |
 | G6 — Calendar + scheduling | NOT STARTED | |
@@ -113,3 +113,13 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Independent GitHub Actions for exact SHA `d97343d7aef1975597bfc8544a70796d1ea1807a`: run `38165238012` `completed/success`, https://github.com/leuyduc/dayflow/actions/runs/38165238012 .
 - G3 evidence on source branch: `docs/V2_G3_IMPLEMENTATION_PROGRESS.md`; no Linux config, production secrets, service, or database changes. G1-A old root key and G1-C isolation remain outstanding.
 - Next: commission a separate LOCAL development PostgreSQL service and run real adapter+migration+login/owner isolation tests; separately review security configuration and gate acceptance. Do not deploy G3 to Ubuntu or use live production database.
+
+## G3 real PostgreSQL milestone and independent CI — 2026-10-12
+- User asked to continue G3 on isolated development. Read checkpoint, G3 evidence, history and inspected Windows development branch clean at `d97343d`. No Docker/WSL/psql available on Windows; Ubuntu was NOT used.
+- Prepared a **temporary local native PostgreSQL 17.10** cluster using development-only Node wrapper/binaries in gitignored `.artifacts/postgres-sandbox/`. Bound only to loopback; distinct `dayflow_dev` role and `dayflow_dev_g3` DB; all credentials randomly generated during tests, never committed.
+- Reproducible `npm run test:postgres:local` validates TCP/pg.Pool and Drizzle migrations (four tables), migration replay idempotence, guarded owner bootstrap and rejection of second bootstrap, actual HTTP+cookie login, owner-only task read, CSRF and session revocation; PostgreSQL stops cleanly (port test has zero listeners).
+- Windows full checks PASS: typecheck, lint, Vitest **21/21**, build, format, real Chrome desktop/mobile smoke, plus PostgreSQL live integration.
+- Code and evidence on `feat/g3-auth-db`, commit `a3074d912ee93bd69e756bb1b943127ea9ddcdfc`, pushed; local working tree clean.
+- Independent GitHub Actions at https://github.com/leuyduc/dayflow/actions/runs/38166399632: `checks` = SUCCESS, `g3-postgres-integration` = SUCCESS; explicitly verified the `Run npm run test:postgres:ci` step = SUCCESS against ephemeral `postgres:17` service on Linux runner.
+- Evidence: `docs/V2_G3_LIVE_POSTGRES_EVIDENCE.md` on source branch. No PostgreSQL instance persisted, no Ubuntu/production services or user data changed.
+- **G3 technically verified locally + in CI; awaiting operator acceptance/security review.** G4 task CRUD not started. G1-A exposed root SSH key and G1-C Linux agent isolation remain unresolved; autonomous Muse/Linux deployment prohibited until remedied.
