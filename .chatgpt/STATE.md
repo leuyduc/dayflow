@@ -4,6 +4,7 @@ Updated: 2026-10-12 (Asia/Bangkok)
 Owner of this checkpoint: ChatGPT only. Muse/OpenCode independently manages its own cache/context.
 Working repo: `leuyduc/dayflow` (public).
 Working docs branch: `design/linux-fullstack-v2`; default `main` untouched by design/G1 work.
+Master plan: `docs/V2_MASTER_PLAN.md` (consolidated architecture, G0–G9, G1 critical path, evidence and risk register).
 DO NOT put credentials, private key text, internal infrastructure addresses or production data here.
 
 ## Goal
@@ -38,6 +39,9 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 - Linux contains existing live workloads; do not modify those as incidental DayFlow setup.
 - On GitHub, `docs/V2_G1_SAFE_CHANGE_PLAN.md` and `docs/V2_G1B_EXECUTION_STATUS.md` record plans and evidence.
 - This checkpoint is based on recorded observations; always recheck live state before actions.
+
+## Latest planning checkpoint
+- 2026-10-12: consolidated full G0–G9 master plan created and cross-checked with current checkpoint. No Linux changes, no new coding authorization, no gate status transition.
 
 ## Next appropriate action
 Plan/test G1-C isolation **without any unauthorised production changes**, or address unresolved G1-A security risk. Do not install OpenCode, deploy, use root for agent, grant Docker/sudo, or run Muse autonomously until isolation and scoped approval are documented.
