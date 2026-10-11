@@ -15,7 +15,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 |---|---|---|
 | G0 — Linux audit | AUDITED | Ubuntu Linux host, existing production services, Docker, Nginx, Node present; OpenCode not found in root PATH as of audit; capacity and isolation risk noted |
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
-| G2 — Full-stack foundation | NOT STARTED | No implementation authorized |
+| G2 — Full-stack foundation | SCAFFOLD VERIFIED ON WINDOWS / GATE NOT ACCEPTED | Separate `feat/fullstack-foundation` branch: web React+Vite, API Fastify, domain unit tests, dependency lockfile, CI workflow. Typecheck/lint/3 tests/build/format PASS and API/web HTTP smoke PASS; see `docs/V2_G2_FOUNDATION_PROGRESS.md` on feature branch. Linux deployment NOT performed |
 | G3 — Authentication + database | NOT STARTED | |
 | G4 — Task UI/API | NOT STARTED | |
 | G5 — Two-device online sync | NOT STARTED | |
@@ -60,6 +60,13 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 - Direct Ubuntu MCP `start_process` attempts for `whoami` and `pwd` were BLOCKED by tool safety checks. Neither command ran, so user identity and current working directory on the newly paired device are **UNVERIFIED**.
 - This updates prior "not paired" state: pairing succeeded, but terminal access through this integration is still BLOCKED. Do not claim `dayflow-dev` is the remote MCP process identity simply because earlier SSH used that user.
 - No Linux service, config, filesystem or production changes were made in this verification turn.
+
+## Fast-track coding checkpoint — 2026-10-12
+- Following operator direction to accelerate, feature branch `feat/fullstack-foundation` created from V2 design docs and real scaffold committed there; code commit `fa73757`, evidence doc follows in branch.
+- Windows worktree created under user workspace, npm dependencies resolved with `--ignore-scripts`, lockfile committed. Vite version mismatch fixed by aligning to Vite 7.
+- Verified `npm run typecheck`, `lint`, `test` (3/3), `build`, `format:check` all exit 0, plus local API and web HTTP smoke. Git push success.
+- Web and API dev servers started on Windows localhost for smoke tests; may still be running at this checkpoint; must check live state on resumption.
+- No deployment to Linux, no G1 security pass; Muse inference still not verified. G2 scaffold exists but overall G2 gate NOT ACCEPTED.
 
 ## Next appropriate action
 Ask operator to approve one of: (preferred) separate VM/host with explicit network restrictions, or a verified rootless isolated container/sandbox with restricted host/LAN egress and no production mounts. First remediate G1-A exposed key before marking overall G1 PASS. Do not install OpenCode, deploy, use root for Muse, grant Docker/sudo, or run Muse autonomously until approved isolation is tested.
