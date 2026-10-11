@@ -16,8 +16,8 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G0 — Linux audit | AUDITED | Ubuntu Linux host, existing production services, Docker, Nginx, Node present; OpenCode not found in root PATH as of audit; capacity and isolation risk noted |
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
-| G3 — Authentication + database | REAL POSTGRESQL TESTS + CI PASS / REVIEW PENDING | `feat/g3-auth-db` at `a3074d9`: 21 tests, real HTTP/pg.Pool/migration/bootstrap/authorization against PostgreSQL 17, two GitHub Actions jobs SUCCESS; G3 operator acceptance not yet granted |
-| G4 — Task UI/API | NOT STARTED | |
+| G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
+| G4 — Task UI/API | IMPLEMENTED / LOCAL QA PASS / CI PENDING / GATE NOT ACCEPTED | `feat/g4-task-crud` `b435f4d`; 27 tests, PostgreSQL 17 actual HTTP CRUD, Chrome UI mock smoke PASS |
 | G5 — Two-device online sync | NOT STARTED | |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
@@ -123,3 +123,12 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Independent GitHub Actions at https://github.com/leuyduc/dayflow/actions/runs/38166399632: `checks` = SUCCESS, `g3-postgres-integration` = SUCCESS; explicitly verified the `Run npm run test:postgres:ci` step = SUCCESS against ephemeral `postgres:17` service on Linux runner.
 - Evidence: `docs/V2_G3_LIVE_POSTGRES_EVIDENCE.md` on source branch. No PostgreSQL instance persisted, no Ubuntu/production services or user data changed.
 - **G3 technically verified locally + in CI; awaiting operator acceptance/security review.** G4 task CRUD not started. G1-A exposed root SSH key and G1-C Linux agent isolation remain unresolved; autonomous Muse/Linux deployment prohibited until remedied.
+
+## G3 acceptance and G4 development checkpoint — 2026-10-12
+- User explicitly **accepted G3 technical verification**, grounded in G3 commit `a3074d9` and GitHub Actions run `38166399632`. This acceptance does NOT clear G1-A exposed root SSH key or G1-C insufficient agent isolation; no permission for production deployment or autonomous Linux Muse was granted.
+- Started G4 on dedicated branch `feat/g4-task-crud` derived from G3, committed/pushed `b435f4dbfbfb3bb16572b5de5cbb481bbfbcc3fb` to origin; Windows worktree clean.
+- Implemented server-owned task CRUD (create, list, patch, complete/reopen and soft-delete tombstones), strict Zod validation, owner-scoped PostgreSQL queries, atomic expectedRevision CAS with HTTP 409, session+Origin+CSRF on all mutations.
+- Added React login/session restore and online task workspace with quick capture, search/status filter, edit title/description/priority/dueDate, completion toggle, delete confirmation and error states. The UI is not connected to a personal persistent account unless a separate dev DB and owner are configured.
+- Actual Windows development verification: TypeScript PASS; ESLint PASS (one unused import detected and fixed); Vitest **27/27 PASS** (including G4 API+React); build PASS; format PASS; Chrome G2 smoke PASS; Chrome G4 mock-API UI smoke PASS (after correcting test to use the unfiltered Tasks view for reopening completed tasks); real PostgreSQL 17 HTTP G4 create/edit/complete/reopen/delete/owner isolation/revision conflict/soft-delete PASS.
+- Existing CI workflow was triggered for G4 SHA; independent run https://github.com/leuyduc/dayflow/actions/runs/38167837603 was still `in_progress` at this checkpoint. Do not mark CI pass until independently observed.
+- G4 code and evidence: `docs/V2_G4_PROGRESS.md` in branch `feat/g4-task-crud`. G4 status **development implementation verified locally / gate acceptance pending**. No Ubuntu or production modifications.
