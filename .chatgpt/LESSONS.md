@@ -42,3 +42,11 @@ Lesson: Distinguish device registration, transport health, actual shell executio
 ## 2026-10-12 — Model discovery is not a successful model invocation
 Observed: OpenCode displayed Muse Spark 1.3 in its model list, but a deliberately minimal model invocation did not produce output and remained waiting until the test process was terminated.
 Lesson: Check provider/model availability using a bounded harmless smoke test before delegating development. Treat non-responsive sessions as unverified; do not report Muse as working just because the model name appears. Never conflate MCP Online, file access, shell access and model inference.
+
+## 2026-10-12 — Parallel progress is possible without touching production
+Observed: G1 Linux agent isolation remained unresolved, but the DayFlow web/API foundation was developed and actually verified on the separate Windows workstation and GitHub feature branch.
+Lesson: Do not make all coding progress contingent on production-server setup. Use a clean feature branch and safe local development, with strict prohibition on deployment until Linux safety gates pass. Track off-server scaffold success separately from G1/G2 formal acceptance.
+
+## 2026-10-12 — Use dependency lockfile and check plugin compatibility
+Observed: Initial web typecheck/build failed due to Vite 6 workspace version coexisting with Vite 7 plugin types. Aligning to Vite 7, regenerating lockfile and rerunning the full checks resolved the issue.
+Lesson: Resolve npm dependency versions before trusting typecheck/build, retain a lockfile and verify actual commands. Limit Prettier to new source rather than rewriting historical design documents simply to pass a style gate.
