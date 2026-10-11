@@ -58,3 +58,7 @@ Lesson: Prefer testable app factories and repeatable browser smoke scripts over 
 ## 2026-10-12 — Commit hygiene and remote reconciliation
 Observed: Git's staged whitespace check caught a README trailing-space issue before commit. After committing, GitHub rejected push because a documentation-only commit had been added remotely since local clone.
 Lesson: Correct whitespace rather than bypassing QA; on non-fast-forward rejection, fetch and inspect remote-only commits/changed files, then rebase/merge safely. Never force-push merely to advance a milestone. Always verify local/remote synchronization and record the final commit SHA.
+
+## 2026-10-12 — Confirm independent CI by commit, not by missing status widgets
+Observed: GitHub connector combined commit status and PR-scoped runs returned empty, but the repository's public GitHub Actions runs API showed an actual completed/successful workflow for the specific pushed SHA.
+Lesson: An empty status list is not proof that CI did not run. Verify workflow run by exact commit SHA and record link/conclusion, while keeping local tests, CI and gate acceptance separate.
