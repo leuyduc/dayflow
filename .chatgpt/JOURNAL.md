@@ -113,3 +113,7 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Final local checks: typecheck PASS, lint PASS after removing unused test import, Vitest 27/27 PASS, build PASS, format PASS, G2 and G4 Chrome smoke PASS, actual HTTP+PostgreSQL 17 CRUD/owner/CSRF/revision/tombstone integration PASS.
 - Staged diff whitespace check PASS. Pushed G4 commit `b435f4dbfbfb3bb16572b5de5cbb481bbfbcc3fb`; clean working tree. Independent CI was running at time of entry: https://github.com/leuyduc/dayflow/actions/runs/38167837603 .
 - No shared DB, credentials, Ubuntu/production or main changes. UI browser smoke uses mocked API, while PostgreSQL real HTTP test validates API persistence separately. G4 not formally accepted.
+
+## 2026-10-12 — G4 exact-commit independent CI PASS
+- Checked GitHub Actions run 38167837603 for commit `b435f4dbfbfb3bb16572b5de5cbb481bbfbcc3fb`: `checks` and `g3-postgres-integration` jobs both completed SUCCESS. Confirmed `npm run test:postgres:ci` step SUCCESS; that script exercises G4 real PostgreSQL CRUD as well as G3 auth.
+- Outcome: G4 source pushed and locally verified; independent Linux CI verified. G4 awaits human acceptance, no production deployment or Ubuntu changes.
