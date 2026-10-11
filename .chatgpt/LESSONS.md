@@ -30,3 +30,7 @@ Lesson: Never treat a dedicated Unix user or Docker socket DAC mode as sufficien
 ## 2026-10-12 — Blocked negative tests cannot be claimed successful
 Observed: remote tool safety policy blocked direct sensitive-file permission probes, though filesystem modes could be inspected safely.
 Lesson: Record access-denial tests as BLOCKED/UNVERIFIED and base recommendations on what was genuinely observed. Do not bypass tool safety controls just to manufacture a PASS.
+
+## 2026-10-12 — Device access is not agent isolation
+Observed: Direct Remote Desktop Commander Linux pairing could simplify access, but the G1-C audit already demonstrated a dev account could reach localhost services; an attempt to launch the pairing remotely was blocked by platform safety controls.
+Lesson: Pair devices only with explicit operator verification, do not circumvent tool blocks, and do not confuse remote MCP terminal access with a production-safe code-execution sandbox. Keep read-only audit and broader agent permissions separately gated.
