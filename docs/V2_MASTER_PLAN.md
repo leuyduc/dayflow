@@ -27,7 +27,7 @@ Operator workflow: User approves direction/releases; ChatGPT coordinates/verifie
 |---|---|---|---|
 | G0 | Audit Linux OS/resources/SSH/ports/processes/services/tooling | Verified inventory, hazards and non-disruption rules | AUDITED |
 | G1 | Security, restricted access and Linux OpenCode | Root/dev auth, privilege-denial/isolation tests, local-only agent access, no prod exposure | IN PROGRESS, NOT PASSED |
-| G2 | Full-stack foundation: monorepo web/api/domain/contracts/infra/tests | Dev web + API healthy, lint/type/test/build green, documented scripts and lockfile | NOT STARTED |
+| G2 | Full-stack foundation: monorepo web/api/domain/contracts/infra/tests | Dev web + API, type/lint/test/build and browser smoke | WINDOWS SCAFFOLD QA VERIFIED (10/10 tests); GATE NOT ACCEPTED, CI UNVERIFIED |
 | G3 | Owner bootstrap/auth + PostgreSQL and migrations | Login/logout, CSRF/rate limit, server-owned CRUD/transactions, negative access tests | NOT STARTED |
 | G4 | Tasks + personal planning UI | Real create/edit/complete/delete/reload, filtering, accessible/mobile flows | NOT STARTED |
 | G5 | Two-device online sync | Idempotent changes, revision conflict UI, tombstones, reconnect A/B tests | NOT STARTED |
@@ -52,7 +52,7 @@ Last verified facts (read-only audit + later scoped G1-B actions):
 Priority order: (1) remediate exposed root key, without losing admin access; (2) G1-C access and isolation tests; (3) select isolation design based on real host conditions; (4) G1-D OpenCode/Muse and a harmless read-only smoke session; (5) G1-E operator sign-off. If user intentionally defers (1), keep G1 security BLOCKED rather than silently treating as passed.
 
 ## 5. Implementation milestones after G1
-G2: establish `apps/web`, `apps/api`, `packages/domain`, `packages/contracts`, `infra/`. Add test scripts and single coherent first vertical slice; do not add speculative infrastructure. Choose compatible supported Node release after environment compatibility test rather than blindly using current system-installed runtime.
+G2: foundation scaffold QA verified on Windows; remaining gate review and CI pending. Technical work establishes `apps/web`, `apps/api`, `packages/domain`, `packages/contracts`, `infra/`. Add test scripts and single coherent first vertical slice; do not add speculative infrastructure. Choose compatible supported Node release after environment compatibility test rather than blindly using current system-installed runtime.
 
 G3–G4: implement single-owner bootstrap and secure sessions, then task CRUD over API with PostgreSQL as authoritative source. Preserve task domain invariants: status, title validation, date-only vs UTC instant, completed/reopened timestamp transitions, and no silent schedule overlap.
 
@@ -89,4 +89,4 @@ Muse/OpenCode **independently manages its own context, session and cache**. No r
 | Stale ChatGPT context/cache | PROCESS | Versioned `.chatgpt/` checkpoint, live reconciliation and append-only journal; Muse unaffected |
 
 ## 9. Current conclusion
-As of this checkpoint, the project is **still before autonomous Muse execution on Linux**. The next safe substantive action is operator approval for G1-C isolation remediation with verified egress restrictions and remediation of the deferred G1-A root key. Coding Gates G2–G9 are not started. Do not infer PASS from documentation alone.
+As of this checkpoint, the project is **still before autonomous Muse execution on Linux**. The next safe substantive action is operator approval for G1-C isolation remediation with verified egress restrictions and remediation of the deferred G1-A root key. G2 has a verified Windows-only React/Fastify scaffold with 10/10 tests and real desktop/mobile Chrome smoke, but is not formally accepted or deployed. G3–G9 have not started. Do not infer PASS from documentation alone.
