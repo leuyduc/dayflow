@@ -64,3 +64,11 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Checked CLI provider credential status: OpenCode Go, OpenRouter and nvidia-glm are configured (provider names only; no secrets retrieved).
 - A minimal `opencode-go/muse-spark-1.3-contributor` response test produced no output and remained blocked. Terminated only that test process.
 - Result: Muse runtime not verified; do not hand off coding yet. No server or repo changes.
+
+## 2026-10-12 — Fast-track G2 foundation on non-production Windows
+- Operator asked to accelerate after prolonged setup. Created `feat/fullstack-foundation` from V2 design branch without modifying `main` or Linux services.
+- Authored web React/Vite/Tailwind navigation shell, Fastify API health endpoint, typed domain/contracts package, npm workspaces, lint/format/type/test scripts.
+- Downloaded repository on Windows under user workspace. `npm install --ignore-scripts` succeeded. Initial TypeScript/build failed because Vite 6 and Vite 7 plugin versions conflicted; aligned web Vite 7 and regenerated dependency lockfile.
+- Verified actual commands: typecheck PASS; lint PASS; Vitest 3/3 PASS; build PASS; scoped format check PASS. API localhost health returned OK, website localhost returned HTTP 200. Browser E2E/CI pipeline not yet confirmed.
+- Committed and pushed verified changes (code commit `fa73757`), added CI workflow, lockfile and README; G2 evidence documented in `docs/V2_G2_FOUNDATION_PROGRESS.md` on feature branch.
+- No Linux/Muse/production changes; overall G1 still FAIL/DEFERRED security and G2 not formally accepted. This prepares a running foundation, not a finished DayFlow.
