@@ -29,7 +29,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 |---|---|---|
 | G1-A old root-key revocation | DEFERRED BY USER / SECURITY BLOCKER | Old exposed public key was observed authorized on Linux; new admin key works. Revocation attempt not completed, old key presumed active |
 | G1-B restricted developer identity | PARTIAL PASS | `dayflow-dev` uid 1001 created, password locked, private home, user-owned public-key SSH. Fresh Windows→Linux SSH returned `whoami=dayflow-dev`; root fresh login still works. `sshd -t` passed; SSH reloaded; SSH/Nginx/Docker/UFW/Cloudflared active afterward. Full negative permission tests blocked by MCP policy |
-| G1-C strong development isolation | NOT STARTED | Account separation alone is insufficient; agent must not reach prod secrets, databases, Docker socket or network endpoints |
+| G1-C strong development isolation | AUDITED — NOT PASSED | Fresh dev SSH verified; passive listener inventory and no-payload TCP connections proved reachability to 3 existing loopback services. File-permission negative tests blocked; separate strong isolation and egress controls needed. See `docs/V2_G1C_ISOLATION_AUDIT.md` |
 | G1-D OpenCode/Muse on Linux | NOT STARTED | Linux OpenCode not confirmed installed; no service/tunnel for Muse yet |
 | G1-E root/admin credential separation and sign-off | NOT STARTED | ChatGPT's Windows MCP can still access a root-authorized administrative SSH key, avoid broad agent delegation |
 
@@ -43,8 +43,13 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 ## Latest planning checkpoint
 - 2026-10-12: consolidated full G0–G9 master plan created and cross-checked with current checkpoint. No Linux changes, no new coding authorization, no gate status transition.
 
+## Latest G1-C verified assessment
+- 2026-10-12: Linux `dayflow-dev` logged in with separate key, only its own group, not Docker/sudo. Host filesystem/socket modes observed (not file contents), but direct sensitive-access permission checks were blocked; cannot claim negative-access PASS.
+- The same user **successfully opened three no-payload TCP connections to existing host loopback services**, including a database-like endpoint. This proves network reachability, not database authorization. Network isolation FAIL until a sandbox/VM and egress policy is implemented and tested.
+- No server changes made during G1-C. Details: `docs/V2_G1C_ISOLATION_AUDIT.md`.
+
 ## Next appropriate action
-Plan/test G1-C isolation **without any unauthorised production changes**, or address unresolved G1-A security risk. Do not install OpenCode, deploy, use root for agent, grant Docker/sudo, or run Muse autonomously until isolation and scoped approval are documented.
+Ask operator to approve one of: (preferred) separate VM/host with explicit network restrictions, or a verified rootless isolated container/sandbox with restricted host/LAN egress and no production mounts. First remediate G1-A exposed key before marking overall G1 PASS. Do not install OpenCode, deploy, use root for Muse, grant Docker/sudo, or run Muse autonomously until approved isolation is tested.
 
 ## Safety and operator preferences
 - ChatGPT keeps a persistent journal and lessons after meaningful actions to survive lost ChatGPT context; each new session reconciles entire G0–G9 overview before selecting next step.
