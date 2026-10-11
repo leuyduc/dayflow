@@ -54,6 +54,13 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 - Attempt to start Desktop Commander Remote Device through Windows MCP→SSH was BLOCKED by tool safety policy. **No installation or pairing was completed. Do not bypass the block**; operator can run the official remote pairing command interactively as `dayflow-dev` and approve OAuth on dashboard.
 - Direct MCP pairing improves access but **does not fix G1-C failed network isolation**, so no autonomous Muse/production access is authorized.
 
+## Direct Ubuntu MCP verification (2026-10-12)
+- Remote Desktop Commander device list NOW confirms `ubuntu-server` ONLINE (v0.2.52) alongside Windows device ONLINE.
+- Direct Ubuntu MCP `ping` returned pong (transport online).
+- Direct Ubuntu MCP `start_process` attempts for `whoami` and `pwd` were BLOCKED by tool safety checks. Neither command ran, so user identity and current working directory on the newly paired device are **UNVERIFIED**.
+- This updates prior "not paired" state: pairing succeeded, but terminal access through this integration is still BLOCKED. Do not claim `dayflow-dev` is the remote MCP process identity simply because earlier SSH used that user.
+- No Linux service, config, filesystem or production changes were made in this verification turn.
+
 ## Next appropriate action
 Ask operator to approve one of: (preferred) separate VM/host with explicit network restrictions, or a verified rootless isolated container/sandbox with restricted host/LAN egress and no production mounts. First remediate G1-A exposed key before marking overall G1 PASS. Do not install OpenCode, deploy, use root for Muse, grant Docker/sudo, or run Muse autonomously until approved isolation is tested.
 
