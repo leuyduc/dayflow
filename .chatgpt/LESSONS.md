@@ -34,3 +34,7 @@ Lesson: Record access-denial tests as BLOCKED/UNVERIFIED and base recommendation
 ## 2026-10-12 — Device access is not agent isolation
 Observed: Direct Remote Desktop Commander Linux pairing could simplify access, but the G1-C audit already demonstrated a dev account could reach localhost services; an attempt to launch the pairing remotely was blocked by platform safety controls.
 Lesson: Pair devices only with explicit operator verification, do not circumvent tool blocks, and do not confuse remote MCP terminal access with a production-safe code-execution sandbox. Keep read-only audit and broader agent permissions separately gated.
+
+## 2026-10-12 — MCP online is not shell-access proof
+Observed: Ubuntu remote device advertised Online and responded to ping, but direct read-only `whoami` and `pwd` execution were blocked by platform safety checks.
+Lesson: Distinguish device registration, transport health, actual shell execution and authorization as separate checkpoints. Do not claim Linux user identity verified merely from a device name or an earlier SSH session, and do not bypass execution policy.
