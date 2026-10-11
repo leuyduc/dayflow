@@ -74,3 +74,15 @@ Lesson: Separate security-critical business logic from persistence, do not regis
 ## 2026-10-12 — Full CI proof follows the exact G3 SHA
 Observed: local lint initially caught an unused PostgreSQL import, corrected before commit. GitHub Actions completed SUCCESS on the pushed G3 commit.
 Lesson: Re-run all checks after fixes, verify CI by exact commit SHA, distinguish schema/fake-store test success from real DB integration, and record the original failure/fix so the next ChatGPT session can resume without repeating work.
+
+## 2026-10-12 — Real PostgreSQL testing without global DB installation
+Observed: A temporary native PostgreSQL cluster was started from an ignored per-project Windows development sandbox, connected to through the actual TCP driver, and stopped cleanly. Schema-only PGlite tests were insufficient to prove pg.Pool, migrations and session behavior.
+Lesson: Isolate native integration test binaries/data, generate credentials per run, bind to 127.0.0.1, test cleanup/no remaining listener, and clearly separate dev tests from production configuration. Never point database tests at shared Ubuntu services to save setup time.
+
+## 2026-10-12 — Migration replay, one-owner invariants and real HTTP tests
+Observed: Replaying the generated Drizzle migration was idempotent; attempting a second owner bootstrap was blocked; a real Fastify HTTP listener with PostgreSQL-backed cookie session enforced owner-only task reads and CSRF logout.
+Lesson: Test the whole auth boundary from HTTP through session to PostgreSQL, including negative/replay cases, not merely isolated repository mocks. Disposable fixtures may include a second account to validate tenancy isolation without enabling public registration.
+
+## 2026-10-12 — Verify Linux CI Postgres job separately from local tests
+Observed: GitHub Actions run 38166399632 had two completed SUCCESS jobs: general checks and the PostgreSQL 17 service integration. The exact `npm run test:postgres:ci` step succeeded.
+Lesson: CI needs an independent ephemeral database service with test-only credentials and no production access. Require the exact SHA/job/step status; leave operational acceptance to the user and never equate technical CI success with permission to deploy.
