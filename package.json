@@ -19,7 +19,10 @@
     "format:check": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" \"scripts/**/*.mjs\" --check",
     "format": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" \"scripts/**/*.mjs\" --write",
     "test": "vitest run",
-    "test:browser": "node scripts/browser-smoke.mjs"
+    "test:browser": "node scripts/browser-smoke.mjs",
+    "db:generate": "drizzle-kit generate --config apps/api/drizzle.config.ts",
+    "db:migrate:dev": "npm run db:migrate:dev -w @dayflow/api",
+    "db:bootstrap:dev": "npm run db:bootstrap:dev -w @dayflow/api"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
