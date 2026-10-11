@@ -86,3 +86,19 @@ Lesson: Test the whole auth boundary from HTTP through session to PostgreSQL, in
 ## 2026-10-12 — Verify Linux CI Postgres job separately from local tests
 Observed: GitHub Actions run 38166399632 had two completed SUCCESS jobs: general checks and the PostgreSQL 17 service integration. The exact `npm run test:postgres:ci` step succeeded.
 Lesson: CI needs an independent ephemeral database service with test-only credentials and no production access. Require the exact SHA/job/step status; leave operational acceptance to the user and never equate technical CI success with permission to deploy.
+
+## 2026-10-12 — Keep authenticated CRUD authorization at the SQL boundary
+Observed: G4 tasks include `userId` filters and conditional `revision` for every edit/delete, reject foreign-owner IDs as 404 and stale edits as 409; soft deletions retain a tombstone for G5.
+Lesson: Never trust client-supplied owner IDs and never rely on a preliminary SELECT for concurrency control. Require owner and expectedRevision predicates in the actual UPDATE/DELETE, verify session+CSRF/Origin for every mutation, and test negative cases against real PostgreSQL.
+
+## 2026-10-12 — UI fixture views and regression tests must match semantics
+Observed: Chrome test tried to reopen a completed task on Today, but Today correctly excluded completed records and the test waited until timeout.
+Lesson: Test complete/reopen on the Tasks/All view, where completed items are visible. Preserve intentional product filters rather than changing UX merely to make smoke tests pass; test mobile overflow and app runtime errors separately.
+
+## 2026-10-12 — Surgical edits require immediate typecheck and complete reruns
+Observed: An edit to add `tasks` in server auth configuration accidentally altered the Origin/CSRF fields; TypeScript caught it. A mock injection helper needed an explicitly typed payload/async return to avoid the wrong TypeScript overload, and lint caught an unused import.
+Lesson: Inspect targeted diffs after edits to security config, fail fast with typecheck/lint and then rerun real database and browser workflows. Record the failure and specific fix before claiming PASS.
+
+## 2026-10-12 — Distinguish React browser mocks from end-to-end real DB verification
+Observed: Chrome verified frontend login and task interactions with intercepted mocked API responses, while separate real Fastify HTTP tests exercised PostgreSQL 17 persistence and authorization. Neither single test alone proves every browser-to-database integration path.
+Lesson: Report both testing boundaries explicitly; an operator preview requires its own isolated configured database and approved local account. G4 technical success does not mean production readiness or resolve G1 risks.
