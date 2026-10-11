@@ -1,25 +1,39 @@
-> **DAYFLOW V2 — ACTIVE AUTHORITY (2026-10-11)**
-> The approved direction is Linux-hosted OpenCode/Muse + web frontend + backend + PostgreSQL + authenticated cross-device synchronization.
-> Read `docs/V2_PRODUCT_DECISIONS.md`, `docs/V2_ARCHITECTURE.md`, `docs/V2_SYNC_PROTOCOL.md`, `docs/V2_INFRA_SECURITY.md`, `docs/V2_IMPLEMENTATION_PLAN.md` first.
-> V2 supersedes V1 wherever V1 says no account/backend/cloud sync or local storage is sole source of truth. The V1 files remain references for task UX, domain, scheduling and accessibility only where consistent with V2.
-> **CURRENT GATE: G0 audited; G1-B developer SSH login partially verified; G1-A key revocation deferred; G1-C isolation pending. Do NOT install/run Muse on Linux, implement DayFlow code or deploy without explicit scoped approval and isolation verification.**
-> **ChatGPT-specific continuity logs live in `.chatgpt/`; these are NOT Muse/OpenCode context/cache instructions and require no repeated reading by Muse.**
+# DayFlow V2 — Full-stack foundation
 
-# DayFlow
+This branch (`feat/fullstack-foundation`) contains the first working development scaffold for DayFlow V2. **It is not deployed** and does not yet implement authentication, task persistence, synchronization, or offline edits.
 
-DayFlow is a local-first personal planner for fast task capture, task details, calendar planning, and editable schedule suggestions.
+## Architecture
+- `apps/web`: React 19 + Vite 7 + Tailwind 4, accessible responsive navigation and API status
+- `apps/api`: Fastify 5 HTTP service (development health endpoint only)
+- `packages/domain`: pure typed task rules with Vitest unit tests
+- `packages/contracts`: shared API contract types
+- Root: npm workspaces, ESLint, Prettier, TypeScript strict
 
-## Current status
-This branch contains the product and implementation specifications for an autonomous implementation agent. The application is to be built according to `AGENTS.md`, `START_HERE.md`, and `docs/`.
+## Local setup
+Requires Node.js 22.12 or later and npm.
 
-## Product principles
-- Private and local-first: user data stays in the browser's IndexedDB.
-- No account, backend, cloud sync, or AI feature in the MVP.
-- Calendar distinguishes deadlines from planned work blocks.
-- Schedule suggestions are previews until explicitly accepted.
-- Backup and restore keep user data portable.
+```bash
+npm ci
+npm run dev:api
+# in a separate terminal:
+npm run dev:web
+```
 
-## Start implementing
-Use Muse 1.3 via OpenCode from this repository and instruct it to read `AGENTS.md` and `START_HERE.md`, then follow the implementation plan. The agent should work on `prompt/agent-bootstrap` and must not merge to `main` without explicit permission.
+Web: http://127.0.0.1:5173
+API health: http://127.0.0.1:3002/api/health
 
-See `docs/IMPLEMENTATION_PLAN.md` for milestones and `docs/TEST_PLAN.md` for release gates.
+## Checks
+```bash
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+npm run format:check
+```
+
+These checks validate only the G2 scaffold. Real authentication, PostgreSQL persistence and protected API behavior belong to later Gates.
+
+## Source of truth
+V2 product/architecture/QA: `docs/V2_MASTER_PLAN.md` and other `docs/V2_*.md`.
+The `.chatgpt/` directory is ChatGPT-only continuity and **not** Muse/OpenCode cache.
+Do not deploy this branch to the live Linux server before security isolation and gate approval.

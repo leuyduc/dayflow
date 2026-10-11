@@ -41,7 +41,9 @@ export function App() {
   return (
     <div className="shell">
       <aside className="sidebar" aria-label="Điều hướng chính">
-        <div className="brand"><span className="brand-mark">D</span>DayFlow</div>
+        <div className="brand">
+          <span className="brand-mark">D</span>DayFlow
+        </div>
         <p className="sidebar-caption">Không gian làm việc cá nhân</p>
         <nav className="nav-list" aria-label="Các màn hình">
           {pages.map((item) => (
@@ -52,7 +54,9 @@ export function App() {
               onClick={() => setPage(item.id)}
               aria-current={page === item.id ? "page" : undefined}
             >
-              <span aria-hidden="true" className="nav-icon">{item.icon}</span>
+              <span aria-hidden="true" className="nav-icon">
+                {item.icon}
+              </span>
               {item.title}
             </button>
           ))}
@@ -65,7 +69,12 @@ export function App() {
           <span className="topbar-title">Tổng quan</span>
           <span className={"api-status " + api} role="status">
             <span className="status-dot" aria-hidden="true" />
-            API {api === "checking" ? "đang kiểm tra" : api === "online" ? "đã kết nối" : "chưa kết nối"}
+            API{" "}
+            {api === "checking"
+              ? "đang kiểm tra"
+              : api === "online"
+                ? "đã kết nối"
+                : "chưa kết nối"}
           </span>
         </header>
 
@@ -74,10 +83,15 @@ export function App() {
           <h1>{current.title}</h1>
           <p className="subtitle">{hints[page]}</p>
           <div className="message-card">
-            <div className="message-icon" aria-hidden="true">✦</div>
+            <div className="message-icon" aria-hidden="true">
+              ✦
+            </div>
             <div>
               <h2>Khung ứng dụng đã sẵn sàng để phát triển</h2>
-              <p>G2 tạo nền tảng điều hướng và API health. Quản lý task, đăng nhập và đồng bộ chưa được triển khai; chưa lưu bất kỳ dữ liệu cá nhân nào.</p>
+              <p>
+                G2 tạo nền tảng điều hướng và API health. Quản lý task, đăng nhập và đồng bộ chưa
+                được triển khai; chưa lưu bất kỳ dữ liệu cá nhân nào.
+              </p>
               <span className="stage">G2 · Foundation</span>
             </div>
           </div>
@@ -92,7 +106,8 @@ export function App() {
               onClick={() => setPage(item.id)}
               aria-current={page === item.id ? "page" : undefined}
             >
-              <span aria-hidden="true">{item.icon}</span>{item.title}
+              <span aria-hidden="true">{item.icon}</span>
+              {item.title}
             </button>
           ))}
         </nav>

@@ -3,16 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
-  "workspaces": ["apps/*", "packages/*"],
+  "engines": {
+    "node": "\u003e=22.12.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:web": "npm run dev -w @dayflow/web",
     "dev:api": "npm run dev -w @dayflow/api",
-    "build": "npm run build -w @dayflow/domain && npm run build -w @dayflow/contracts && npm run build -w @dayflow/api && npm run build -w @dayflow/web",
+    "build": "npm run build -w @dayflow/domain \u0026\u0026 npm run build -w @dayflow/contracts \u0026\u0026 npm run build -w @dayflow/api \u0026\u0026 npm run build -w @dayflow/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
-    "format:check": "prettier . --check",
-    "format": "prettier . --write",
+    "format:check": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" --check",
+    "format": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" --write",
     "test": "vitest run"
   },
   "devDependencies": {

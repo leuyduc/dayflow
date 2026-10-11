@@ -8,7 +8,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node }
-    }
-  }
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
 );
