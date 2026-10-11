@@ -72,3 +72,11 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Verified actual commands: typecheck PASS; lint PASS; Vitest 3/3 PASS; build PASS; scoped format check PASS. API localhost health returned OK, website localhost returned HTTP 200. Browser E2E/CI pipeline not yet confirmed.
 - Committed and pushed verified changes (code commit `fa73757`), added CI workflow, lockfile and README; G2 evidence documented in `docs/V2_G2_FOUNDATION_PROGRESS.md` on feature branch.
 - No Linux/Muse/production changes; overall G1 still FAIL/DEFERRED security and G2 not formally accepted. This prepares a running foundation, not a finished DayFlow.
+
+## 2026-10-12 — G2 verification expanded to real browser
+- At session start reread ChatGPT STATE, JOURNAL, LESSONS, G2 evidence and master plan, confirmed Windows development branch/worktree clean and both Remote MCP devices Online. Reused existing Windows worktree; no Ubuntu actions.
+- Refactored Fastify health API into an injectable app factory; added three API tests and four UI component tests. Domain tests retained; **10/10 tests passed**.
+- Installed testing-only dependencies under npm workspace using `--ignore-scripts` and updated lockfile. Existing Chrome allowed Playwright Core real-browser smoke without downloading another browser. Desktop/mobile navigation, API status, no horizontal overflow and zero JS page errors all passed.
+- Re-ran typecheck, lint, unit/component/API tests, production build and format check: all PASS with exit 0. Reproducible browser script and QA evidence document committed. Screenshots kept outside Git in ignored local artifact folder.
+- First commit attempt was correctly blocked by `git diff --cached --check` on one README trailing whitespace; fixed then rechecked. After local commit, push initially rejected due to remote doc-only commit; fetched/inspected ahead/behind, rebased safely and pushed without force.
+- GitHub feature branch now at **`920fa74`**, local and origin synced. GitHub Actions check status not independently confirmed; leave UNVERIFIED. G2 scope only, no DB/production changes. G1 isolation/security blockers remain.
