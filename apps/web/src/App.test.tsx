@@ -42,10 +42,19 @@ describe("DayFlow app shell", () => {
     await waitFor(() => expect(screen.getByRole("status").textContent).toContain("chưa kết nối"));
   });
 
-  it("does not present G3/G4 capabilities as implemented", () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+  it("requires login before displaying private tasks", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockImplementation((uri: string) =>
+          Promise.resolve({ ok: uri === "/api/health", status: uri === "/api/health" ? 200 : 401 }),
+        ),
+    );
     render(<App />);
-
-    expect(screen.getByText(/Quản lý task, đăng nhập và đồng bộ chưa/)).toBeTruthy();
+    await waitFor(() =>
+      expect(screen.getByRole("form", { name: "Đăng nhập DayFlow" })).toBeTruthy(),
+    );
+    expect(screen.queryByLabelText("Ghi nhanh công việc")).toBeNull();
   });
 });

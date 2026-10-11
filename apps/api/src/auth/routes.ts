@@ -5,6 +5,8 @@ import rateLimit from "@fastify/rate-limit";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AuthStore, SessionRecord } from "./types.js";
+import type { TaskStore } from "../tasks/types.js";
+import { registerTaskRoutes } from "../tasks/routes.js";
 
 const COOKIE = "dayflow_session";
 const SESSION_AGE_SECONDS = 60 * 60 * 24 * 7;
@@ -18,6 +20,7 @@ const credentialsSchema = z
 
 export interface AuthConfig {
   store: AuthStore;
+  tasks?: TaskStore;
   csrfSecret: string;
   allowedOrigin: string;
   cookieSecure?: boolean;
@@ -141,12 +144,28 @@ export async function registerAuth(app: FastifyInstance, options: AuthConfig): P
     return { ok: true };
   });
 
-  // G3 read-only authorization slice. Task mutation routes belong to G4.
-  app.get("/api/tasks", async (request, reply) => {
-    const session = await readSession(request);
-    if (!session) return reply.code(401).send({ error: "unauthorized" });
-    reply.header("Cache-Control", "no-store");
-    const items = await options.store.listTasksForOwner(session.record.userId);
-    return { tasks: items };
-  });
+  if (options.tasks) {
+    registerTaskRoutes(app, options.tasks, {
+      owner: async (request) => (await readSession(request))?.record.userId ?? null,
+      canMutate: async (request) => {
+        if (!matchesOrigin(request, options.allowedOrigin)) return false;
+        const session = await readSession(request);
+        return (
+          !!session &&
+          sameSecret(
+            request.headers["x-dayflow-csrf"],
+            csrfForTokenHash(options.csrfSecret, session.hash),
+          )
+        );
+      },
+    });
+  } else {
+    // Retain the G3 read-only contract when the task store is not configured.
+    app.get("/api/tasks", async (request, reply) => {
+      const session = await readSession(request);
+      if (!session) return reply.code(401).send({ error: "unauthorized" });
+      reply.header("Cache-Control", "no-store");
+      return { tasks: await options.store.listTasksForOwner(session.record.userId) };
+    });
+  }
 }

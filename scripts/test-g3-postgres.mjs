@@ -152,7 +152,13 @@ try {
   const { store, close } = createPostgresStore(url);
   closeStore = close;
   app = buildApp({
-    auth: { store, csrfSecret, allowedOrigin: "http://127.0.0.1:5173", now: () => new Date() },
+    auth: {
+      store,
+      tasks: store,
+      csrfSecret,
+      allowedOrigin: "http://127.0.0.1:5173",
+      now: () => new Date(),
+    },
   });
   await app.ready();
   const httpAddress = await app.listen({ host: "127.0.0.1", port: 0 });
@@ -177,6 +183,119 @@ try {
     "Real HTTP owner scoping failed",
   );
   console.log("REAL_HTTP_POSTGRES_COOKIE_AUTH=PASS");
+  // G4: exercise actual HTTP + cookie + CSRF + Drizzle + PostgreSQL.
+  const httpSession = await httpLogin.json();
+  const mutationHeaders = {
+    cookie: httpCookie,
+    origin: "http://127.0.0.1:5173",
+    "content-type": "application/json",
+    "x-dayflow-csrf": httpSession.csrfToken,
+  };
+  async function mutate(method, route, payload, headers = mutationHeaders) {
+    return fetch(httpAddress + route, {
+      method,
+      headers,
+      body: JSON.stringify(payload),
+    });
+  }
+  const invalidCreate = await mutate("POST", "/api/tasks", { title: " " });
+  must(invalidCreate.status === 400, "Empty task title must be rejected");
+  const missingCsrf = await mutate(
+    "POST",
+    "/api/tasks",
+    { title: "forged" },
+    {
+      cookie: httpCookie,
+      origin: "http://127.0.0.1:5173",
+      "content-type": "application/json",
+    },
+  );
+  must(missingCsrf.status === 403, "Missing task CSRF was accepted");
+  const invalidOrigin = await mutate(
+    "POST",
+    "/api/tasks",
+    { title: "forged" },
+    {
+      ...mutationHeaders,
+      origin: "https://evil.invalid",
+    },
+  );
+  must(invalidOrigin.status === 403, "Invalid task Origin was accepted");
+  const created = await mutate("POST", "/api/tasks", {
+    title: "Real PostgreSQL G4 task",
+    priority: "high",
+    dueDate: "2026-10-25",
+  });
+  must(created.status === 201, "G4 create failed: " + created.status);
+  const g4task = (await created.json()).task;
+  must(g4task.revision === 1 && g4task.priority === "high", "Incorrect task creation");
+  const foreign = await database.query("select id from tasks where user_id=$1", [secondaryId]);
+  const foreignId = foreign.rows[0]?.id;
+  must(!!foreignId, "Missing other owner fixture");
+  must(
+    (
+      await mutate("PATCH", "/api/tasks/" + foreignId, {
+        expectedRevision: 1,
+        title: "Not authorized",
+      })
+    ).status === 404,
+    "Cross-owner update leaked",
+  );
+  must(
+    (await mutate("DELETE", "/api/tasks/" + foreignId, { expectedRevision: 1 })).status === 404,
+    "Cross-owner deletion leaked",
+  );
+  const updated = await mutate("PATCH", "/api/tasks/" + g4task.id, {
+    expectedRevision: 1,
+    title: "G4 updated",
+    description: "Stored for real",
+  });
+  must(updated.status === 200 && (await updated.json()).task.revision === 2, "G4 update failed");
+  must(
+    (
+      await mutate("PATCH", "/api/tasks/" + g4task.id, {
+        expectedRevision: 1,
+        title: "Stale",
+      })
+    ).status === 409,
+    "Stale revision was accepted",
+  );
+  const completed = await mutate("PATCH", "/api/tasks/" + g4task.id, {
+    expectedRevision: 2,
+    status: "completed",
+  });
+  const completedTask = (await completed.json()).task;
+  must(completed.status === 200 && !!completedTask.completedAt, "Complete failed");
+  const reopened = await mutate("PATCH", "/api/tasks/" + g4task.id, {
+    expectedRevision: 3,
+    status: "inbox",
+  });
+  must(
+    reopened.status === 200 && (await reopened.json()).task.completedAt === null,
+    "Reopen failed",
+  );
+  const removed = await mutate("DELETE", "/api/tasks/" + g4task.id, { expectedRevision: 4 });
+  must(removed.status === 200, "G4 delete failed");
+  must(
+    (await mutate("DELETE", "/api/tasks/" + g4task.id, { expectedRevision: 5 })).status === 404,
+    "Repeated deletion should not reapply",
+  );
+  const tombstone = await database.query(
+    "select deleted_at is not null as deleted, revision from tasks where id=$1",
+    [g4task.id],
+  );
+  must(
+    tombstone.rows[0]?.deleted === true && tombstone.rows[0]?.revision === 5,
+    "Deletion did not preserve versioned tombstone",
+  );
+  const isolatedTasks = await fetch(httpAddress + "/api/tasks", {
+    headers: { cookie: httpCookie },
+  });
+  must(
+    isolatedTasks.status === 200 && (await isolatedTasks.json()).tasks.length === 1,
+    "Owner list incorrectly includes other user's task or deleted task",
+  );
+  console.log("G4_REAL_HTTP_POSTGRES_CRUD_OWNER_REVISION_TOMBSTONE=PASS");
 
   const anon = await app.inject("/api/tasks");
   must(anon.statusCode === 401, "Anonymous task request not blocked");

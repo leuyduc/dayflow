@@ -89,3 +89,17 @@ npm run test:postgres:local
 The script generates disposable credentials, binds PostgreSQL to loopback, creates a separate test database, validates migrations and real HTTP-backed session/authorization, then stops the server. No production database is involved. On GitHub Actions, a `postgres:17` CI service runs the same test in external mode with a public test-only credential, separate from the normal lint/build/unit checks.
 
 Evidence and limitations: `docs/V2_G3_LIVE_POSTGRES_EVIDENCE.md`. Do not use the prerelease test wrapper as a production database.
+
+## G4 — Online task CRUD development slice
+
+The `feat/g4-task-crud` branch adds server-authorized online task create/list/edit/complete/reopen/delete, optimistic concurrency via `expectedRevision`, and React task management UI (login, capture, search/filter, edit and delete). The server is still authoritative for persisted data. There is no live account configured by default.
+
+For reproducible verification on Windows development:
+- `npm run test`: unit/React/API/PGlite tests.
+- `npm run test:postgres:local`: real PostgreSQL 17 + TCP/HTTP CRUD tests (requires the ignored development binary setup documented in `docs/V2_G3_LIVE_POSTGRES_EVIDENCE.md`).
+- `npm run test:browser:g4`: real Chrome UI interaction test with mocked API responses (requires dev:web running).
+- `npm run typecheck`, `npm run lint`, `npm run build`, `npm run format:check`.
+
+Mutations require an authenticated cookie and `X-Dayflow-CSRF` header; the browser receives the CSRF token only in the in-memory login/session response. JSON `PATCH` and `DELETE` require `expectedRevision`; stale edits return HTTP 409. Cross-owner access is denied, and deletes create tombstones. UI runs against real PostgreSQL only after a separate development database and owner account have been explicitly configured.
+
+See `docs/V2_G4_PROGRESS.md` for evidence and limitations. G4 does not implement scheduling, offline queues or device sync, and must not be deployed to Ubuntu production before G1 isolation and a reviewed release.
