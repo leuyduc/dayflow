@@ -16,14 +16,18 @@
     "build": "npm run build -w @dayflow/domain \u0026\u0026 npm run build -w @dayflow/contracts \u0026\u0026 npm run build -w @dayflow/api \u0026\u0026 npm run build -w @dayflow/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
-    "format:check": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" --check",
-    "format": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" --write",
-    "test": "vitest run"
+    "format:check": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" \"scripts/**/*.mjs\" --check",
+    "format": "prettier \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/**/*.{ts,tsx,json}\" \"*.{js,json}\" \"scripts/**/*.mjs\" --write",
+    "test": "vitest run",
+    "test:browser": "node scripts/browser-smoke.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@testing-library/react": "^16.3.3",
     "eslint": "^9.20.0",
     "globals": "^16.0.0",
+    "jsdom": "^26.1.0",
+    "playwright-core": "^1.64.0",
     "prettier": "^3.5.0",
     "typescript": "^5.8.0",
     "typescript-eslint": "^8.23.0",

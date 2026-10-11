@@ -1,13 +1,6 @@
-import Fastify from "fastify";
+import { buildApp } from "./app.js";
 
-const app = Fastify({ logger: true });
-
-app.get("/api/health", async () => ({
-  status: "ok",
-  service: "dayflow-api",
-  version: "0.1.0",
-}));
-
+const app = buildApp();
 const port = Number(process.env.DAYFLOW_API_PORT ?? "3002");
 const host = process.env.DAYFLOW_API_HOST ?? "127.0.0.1";
 
