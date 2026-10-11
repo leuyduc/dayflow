@@ -80,3 +80,8 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Re-ran typecheck, lint, unit/component/API tests, production build and format check: all PASS with exit 0. Reproducible browser script and QA evidence document committed. Screenshots kept outside Git in ignored local artifact folder.
 - First commit attempt was correctly blocked by `git diff --cached --check` on one README trailing whitespace; fixed then rechecked. After local commit, push initially rejected due to remote doc-only commit; fetched/inspected ahead/behind, rebased safely and pushed without force.
 - GitHub feature branch now at **`920fa74`**, local and origin synced. GitHub Actions check status not independently confirmed; leave UNVERIFIED. G2 scope only, no DB/production changes. G1 isolation/security blockers remain.
+
+## 2026-10-12 — Independent GitHub Actions CI confirmed for G2 QA commit
+- Queried the public repository GitHub Actions API for the exact final feature-branch commit SHA `920fa74cf5ce50a8f20ffd25f8768978e0cff891`.
+- Run `38163990311` (`dayflow-foundation-ci`) returned `status=completed` and `conclusion=success`; https://github.com/leuyduc/dayflow/actions/runs/38163990311 .
+- Independent CI is verified for this SHA. Windows local checks and real-browser smoke also passed. G2 complete production functionality and formal operator signoff remain OUTSTANDING; Linux server untouched.
