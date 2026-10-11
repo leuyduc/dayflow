@@ -76,3 +76,8 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - A minimal read-only Windows OpenCode model smoke attempt emitted no output and stayed blocked; only this test session was terminated and a follow-up session list was empty. Model execution remains UNVERIFIED.
 - No DayFlow code, Linux services, SSH policy, Docker settings or production data changed. Overall G1 still NOT PASSED, G1-C isolation not remediated, G1-D unstarted.
 - Next: resolve direct MCP terminal restrictions through supported app permissions if available; operator approval needed before attempting G1-C sandbox provisioning or Linux OpenCode installation. Lightweight isolated sandbox favored over a full VM only if network egress and production separation are demonstrated.
+
+## Additional OpenCode credential check (2026-10-12)
+- Windows CLI `opencode providers list` returned 3 configured credential providers: OpenCode Go, OpenRouter and nvidia-glm. No tokens were read or recorded.
+- Retried a harmless one-line inference request against `opencode-go/muse-spark-1.3-contributor` using plan/pure mode. It produced no output during repeated polling, showed a waiting process, and that single test process was terminated.
+- Model inference remains BLOCKED / UNVERIFIED. Existing OpenCode sessions and DayFlow repository unchanged. Investigate provider/CLI logs via sanctioned non-secret diagnostics before code delegation; avoid repeated blind invocations.
