@@ -48,6 +48,12 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 - The same user **successfully opened three no-payload TCP connections to existing host loopback services**, including a database-like endpoint. This proves network reachability, not database authorization. Network isolation FAIL until a sandbox/VM and egress policy is implemented and tested.
 - No server changes made during G1-C. Details: `docs/V2_G1C_ISOLATION_AUDIT.md`.
 
+## Direct Ubuntu MCP pairing status (2026-10-12)
+- User proposed pairing Ubuntu as an additional Remote Desktop Commander device so ChatGPT can target Linux without Windows SSH relay.
+- Read-only preflight via verified `dayflow-dev` SSH: Ubuntu has Node.js v26.7.0, npm/npx v11.19.0; developer home is writable, Remote Device not yet paired.
+- Attempt to start Desktop Commander Remote Device through Windows MCP→SSH was BLOCKED by tool safety policy. **No installation or pairing was completed. Do not bypass the block**; operator can run the official remote pairing command interactively as `dayflow-dev` and approve OAuth on dashboard.
+- Direct MCP pairing improves access but **does not fix G1-C failed network isolation**, so no autonomous Muse/production access is authorized.
+
 ## Next appropriate action
 Ask operator to approve one of: (preferred) separate VM/host with explicit network restrictions, or a verified rootless isolated container/sandbox with restricted host/LAN egress and no production mounts. First remediate G1-A exposed key before marking overall G1 PASS. Do not install OpenCode, deploy, use root for Muse, grant Docker/sudo, or run Muse autonomously until approved isolation is tested.
 
