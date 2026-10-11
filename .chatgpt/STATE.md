@@ -68,3 +68,11 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - ChatGPT keeps a persistent journal and lessons after meaningful actions to survive lost ChatGPT context; each new session reconciles entire G0–G9 overview before selecting next step.
 - Muse/OpenCode handles its own context and caches. Do not burden Muse with forced repeated context reads, recaps or duplicated token-expensive documents.
 - Human acceptance at each Gate, evidence before PASS, no automatic merge/deploy.
+
+## Connection and Muse smoke check — 2026-10-12
+- Both Ubuntu and Windows devices were listed Online; Ubuntu MCP ping responded. Ubuntu MCP metadata and home-directory listing worked, showing /home/dayflow-dev exists with mode 0700; remote agent Linux process identity is NOT established.
+- Direct Ubuntu terminal commands are still blocked before execution. Ubuntu config reports /bin/bash default shell and blocked command list; these details do not explain platform-level blocking. Do not circumvent tool safety checks.
+- Windows OpenCode CLI 1.19.0 lists Muse Spark 1.3 providers/models, including opencode/muse-spark-1.3-contributor-free. This is model DISCOVERY, not proof that inference works.
+- A minimal read-only Windows OpenCode model smoke attempt emitted no output and stayed blocked; only this test session was terminated and a follow-up session list was empty. Model execution remains UNVERIFIED.
+- No DayFlow code, Linux services, SSH policy, Docker settings or production data changed. Overall G1 still NOT PASSED, G1-C isolation not remediated, G1-D unstarted.
+- Next: resolve direct MCP terminal restrictions through supported app permissions if available; operator approval needed before attempting G1-C sandbox provisioning or Linux OpenCode installation. Lightweight isolated sandbox favored over a full VM only if network egress and production separation are demonstrated.
