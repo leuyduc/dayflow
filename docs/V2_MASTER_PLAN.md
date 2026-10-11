@@ -27,7 +27,7 @@ Operator workflow: User approves direction/releases; ChatGPT coordinates/verifie
 |---|---|---|---|
 | G0 | Audit Linux OS/resources/SSH/ports/processes/services/tooling | Verified inventory, hazards and non-disruption rules | AUDITED |
 | G1 | Security, restricted access and Linux OpenCode | Root/dev auth, privilege-denial/isolation tests, local-only agent access, no prod exposure | IN PROGRESS, NOT PASSED |
-| G2 | Full-stack foundation: monorepo web/api/domain/contracts/infra/tests | Dev web + API, type/lint/test/build and browser smoke | WINDOWS SCAFFOLD QA VERIFIED (10/10 tests); GATE NOT ACCEPTED, CI UNVERIFIED |
+| G2 | Full-stack foundation: monorepo web/api/domain/contracts/infra/tests | Dev web + API, type/lint/test/build and browser smoke | WINDOWS QA VERIFIED (10/10 tests, real Chrome smoke); GitHub Actions SUCCESS for 920fa74; GATE NOT ACCEPTED |
 | G3 | Owner bootstrap/auth + PostgreSQL and migrations | Login/logout, CSRF/rate limit, server-owned CRUD/transactions, negative access tests | NOT STARTED |
 | G4 | Tasks + personal planning UI | Real create/edit/complete/delete/reload, filtering, accessible/mobile flows | NOT STARTED |
 | G5 | Two-device online sync | Idempotent changes, revision conflict UI, tombstones, reconnect A/B tests | NOT STARTED |
