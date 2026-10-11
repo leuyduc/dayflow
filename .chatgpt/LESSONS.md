@@ -62,3 +62,15 @@ Lesson: Correct whitespace rather than bypassing QA; on non-fast-forward rejecti
 ## 2026-10-12 — Confirm independent CI by commit, not by missing status widgets
 Observed: GitHub connector combined commit status and PR-scoped runs returned empty, but the repository's public GitHub Actions runs API showed an actual completed/successful workflow for the specific pushed SHA.
 Lesson: An empty status list is not proof that CI did not run. Verify workflow run by exact commit SHA and record link/conclusion, while keeping local tests, CI and gate acceptance separate.
+
+## 2026-10-12 — Test generated SQL without touching shared databases
+Observed: the development Windows host had neither Docker nor a PostgreSQL server. Drizzle successfully generated SQL, and PGlite independently executed migrations and enforced PostgreSQL constraints in an ephemeral in-memory database.
+Lesson: A PostgreSQL-compatible embedded engine is a useful safe *intermediate* test for schema/migration code, but it does not verify the separate TCP `pg.Pool` adapter or real PostgreSQL deployment. State this boundary explicitly and retain a required live isolated-Postgres integration gate.
+
+## 2026-10-12 — Fail closed and guard development database commands
+Observed: the G3 authentication API could be tested with an injected in-memory AuthStore, while separate development-only migration/bootstrap utilities were created with loopback, DB-name and environment-marker guards.
+Lesson: Separate security-critical business logic from persistence, do not register auth endpoints when required configuration is absent, and never automatically migrate/create accounts on an unverified database. For new endpoints, cover unauthenticated, wrong Origin, bad CSRF, expired/revoked session and owner scope.
+
+## 2026-10-12 — Full CI proof follows the exact G3 SHA
+Observed: local lint initially caught an unused PostgreSQL import, corrected before commit. GitHub Actions completed SUCCESS on the pushed G3 commit.
+Lesson: Re-run all checks after fixes, verify CI by exact commit SHA, distinguish schema/fake-store test success from real DB integration, and record the original failure/fix so the next ChatGPT session can resume without repeating work.
