@@ -15,7 +15,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 |---|---|---|
 | G0 — Linux audit | AUDITED | Ubuntu Linux host, existing production services, Docker, Nginx, Node present; OpenCode not found in root PATH as of audit; capacity and isolation risk noted |
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
-| G2 — Full-stack foundation | SCAFFOLD VERIFIED ON WINDOWS / GATE NOT ACCEPTED | Separate `feat/fullstack-foundation` branch: web React+Vite, API Fastify, domain unit tests, dependency lockfile, CI workflow. Typecheck/lint/3 tests/build/format PASS and API/web HTTP smoke PASS; see `docs/V2_G2_FOUNDATION_PROGRESS.md` on feature branch. Linux deployment NOT performed |
+| G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. Independent GitHub Actions not verified; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | NOT STARTED | |
 | G4 — Task UI/API | NOT STARTED | |
 | G5 — Two-device online sync | NOT STARTED | |
@@ -88,3 +88,12 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Windows CLI `opencode providers list` returned 3 configured credential providers: OpenCode Go, OpenRouter and nvidia-glm. No tokens were read or recorded.
 - Retried a harmless one-line inference request against `opencode-go/muse-spark-1.3-contributor` using plan/pure mode. It produced no output during repeated polling, showed a waiting process, and that single test process was terminated.
 - Model inference remains BLOCKED / UNVERIFIED. Existing OpenCode sessions and DayFlow repository unchanged. Investigate provider/CLI logs via sanctioned non-secret diagnostics before code delegation; avoid repeated blind invocations.
+
+## G2 QA expansion — 2026-10-12 (latest execution checkpoint)
+- Code branch: `feat/fullstack-foundation`. Latest verified code commit **`920fa74`**, pushed to origin. Local working tree clean after successful fetch/rebase; the remote-only commit was an existing G2 documentation addition, integrated without force-push.
+- Real Windows development checks: `npm run typecheck` PASS, `npm run lint` PASS, `npm run test` PASS **10/10** (3 domain + 3 Fastify injection + 4 React component), `npm run build` PASS, `npm run format:check` PASS.
+- Playwright Core against already installed Chrome: `npm run test:browser` PASS: real desktop navigation/API status, mobile navigation/no horizontal overflow, no JavaScript page errors. Local screenshots saved under ignored `.artifacts/`, not published.
+- Fastify app factory separated from server listener for repeatable integration testing; test dependencies and reproducible smoke script in committed npm lockfile.
+- **GitHub Actions CI independent result UNVERIFIED** (no statuses surfaced by accessible connector, not proof of absence or success). G2 overall still awaits operator acceptance; G3/real DB not implemented.
+- No Linux/production changes, no Muse deployment, G1-C remains unresolved; old exposed root SSH key still requires revocation.
+- Latest source evidence: `docs/V2_G2_QA_EXPANSION_20261012.md` on the feature branch. Next: review G2/CI and request scoped approval for G3 only in non-production; continue security remediation separately.
