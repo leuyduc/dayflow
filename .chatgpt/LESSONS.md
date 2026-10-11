@@ -38,3 +38,7 @@ Lesson: Pair devices only with explicit operator verification, do not circumvent
 ## 2026-10-12 — MCP online is not shell-access proof
 Observed: Ubuntu remote device advertised Online and responded to ping, but direct read-only `whoami` and `pwd` execution were blocked by platform safety checks.
 Lesson: Distinguish device registration, transport health, actual shell execution and authorization as separate checkpoints. Do not claim Linux user identity verified merely from a device name or an earlier SSH session, and do not bypass execution policy.
+
+## 2026-10-12 — Model discovery is not a successful model invocation
+Observed: OpenCode displayed Muse Spark 1.3 in its model list, but a deliberately minimal model invocation did not produce output and remained waiting until the test process was terminated.
+Lesson: Check provider/model availability using a bounded harmless smoke test before delegating development. Treat non-responsive sessions as unverified; do not report Muse as working just because the model name appears. Never conflate MCP Online, file access, shell access and model inference.
