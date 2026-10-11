@@ -97,3 +97,8 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - **GitHub Actions CI independent result UNVERIFIED** (no statuses surfaced by accessible connector, not proof of absence or success). G2 overall still awaits operator acceptance; G3/real DB not implemented.
 - No Linux/production changes, no Muse deployment, G1-C remains unresolved; old exposed root SSH key still requires revocation.
 - Latest source evidence: `docs/V2_G2_QA_EXPANSION_20261012.md` on the feature branch. Next: review G2/CI and request scoped approval for G3 only in non-production; continue security remediation separately.
+
+## Independent CI verification — 2026-10-12
+- Queried public GitHub Actions runs for exact SHA `920fa74cf5ce50a8f20ffd25f8768978e0cff891`: `dayflow-foundation-ci` run **38163990311** status `completed`, conclusion `success`. URL: https://github.com/leuyduc/dayflow/actions/runs/38163990311 .
+- This supersedes earlier `CI UNVERIFIED` statements **for SHA 920fa74 only**. The status is independent GitHub Actions evidence, distinct from local test results. G2 full acceptance remains pending, since DB/migrations/other architectural work and operator gate acceptance are not complete.
+- Worktree was clean after rebase and push of feature-branch commit; remaining risk G1-A exposed root key and G1-C Linux agent isolation unchanged.
