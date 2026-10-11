@@ -17,7 +17,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
-| G4 — Task UI/API | IMPLEMENTED / LOCAL QA PASS / CI PENDING / GATE NOT ACCEPTED | `feat/g4-task-crud` `b435f4d`; 27 tests, PostgreSQL 17 actual HTTP CRUD, Chrome UI mock smoke PASS |
+| G4 — Task UI/API | DEVELOPMENT QA + INDEPENDENT CI PASS / GATE NOT ACCEPTED | `feat/g4-task-crud` `b435f4d`; 27 tests, PostgreSQL 17 actual HTTP CRUD, Chrome UI mock smoke PASS |
 | G5 — Two-device online sync | NOT STARTED | |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
@@ -132,3 +132,8 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Actual Windows development verification: TypeScript PASS; ESLint PASS (one unused import detected and fixed); Vitest **27/27 PASS** (including G4 API+React); build PASS; format PASS; Chrome G2 smoke PASS; Chrome G4 mock-API UI smoke PASS (after correcting test to use the unfiltered Tasks view for reopening completed tasks); real PostgreSQL 17 HTTP G4 create/edit/complete/reopen/delete/owner isolation/revision conflict/soft-delete PASS.
 - Existing CI workflow was triggered for G4 SHA; independent run https://github.com/leuyduc/dayflow/actions/runs/38167837603 was still `in_progress` at this checkpoint. Do not mark CI pass until independently observed.
 - G4 code and evidence: `docs/V2_G4_PROGRESS.md` in branch `feat/g4-task-crud`. G4 status **development implementation verified locally / gate acceptance pending**. No Ubuntu or production modifications.
+
+## Independent G4 CI verified — 2026-10-12
+- Verified GitHub Actions for exact source SHA `b435f4dbfbfb3bb16572b5de5cbb481bbfbcc3fb`: https://github.com/leuyduc/dayflow/actions/runs/38167837603 .
+- `checks` job = completed/SUCCESS; `g3-postgres-integration` job = completed/SUCCESS; specifically the `npm run test:postgres:ci` step = SUCCESS. Despite the inherited job name, the tracked real PostgreSQL test script now includes G4 CRUD/authorization/revision/tombstone cases.
+- Local Windows tests already verified 27/27 PASS, real PostgreSQL 17 HTTP CRUD PASS, Chrome G4 UI mock smoke PASS, lint/type/build/format PASS. No Linux/prod activity. G4 technically ready for operator review, **not yet formally accepted**, and real browser-to-PostgreSQL persistent account preview is not provisioned.
