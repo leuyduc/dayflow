@@ -1,3 +1,9 @@
+> **DAYFLOW V2 — ACTIVE AUTHORITY (2026-10-11)**
+> The approved direction is Linux-hosted OpenCode/Muse + web frontend + backend + PostgreSQL + authenticated cross-device synchronization.
+> Read `docs/V2_PRODUCT_DECISIONS.md`, `docs/V2_ARCHITECTURE.md`, `docs/V2_SYNC_PROTOCOL.md`, `docs/V2_INFRA_SECURITY.md`, `docs/V2_IMPLEMENTATION_PLAN.md` first.
+> V2 supersedes V1 wherever V1 says no account/backend/cloud sync or local storage is sole source of truth. The V1 files remain references for task UX, domain, scheduling and accessibility only where consistent with V2.
+> **STOP: The only next authorized activity is G0 read-only Linux audit, using `PROMPT_FOR_MUSE_V2.md`. No code, installation, production access, merge or deploy without gate approval.**
+
 # DayFlow Agent Instructions
 
 ## Mission
