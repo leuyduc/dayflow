@@ -1,0 +1,63 @@
+# DayFlow V2 — Gate-by-Gate Execution and Acceptance
+
+Status: specification only. No code/installation/deployment until G0 accepted.
+Never mark gates PASS without actual commands/logs/screenshots. No self-merging to main.
+
+## Branching and change controls
+- V1 specifications are retained on prompt/agent-bootstrap.
+- Design branch: design/linux-fullstack-v2 (this branch), based on prompt/agent-bootstrap.
+- After design acceptance, a dedicated feat/fullstack-foundation branch should be created from the approved V2 spec base; no agent writes to main.
+- Future work goes through small PRs; protect main (reviews, required CI). Only human/operator approves deployment.
+- All files reviewed before commit, never commit keys, passwords, .env, DB dumps or secrets.
+
+## Gates
+G0 — Linux environment and access AUDIT ONLY
+Deliver: versioned OS/resource/port/workload inventory, existing access, exact OpenCode command available, resource risk, isolation feasibility, deployment recommendation and list of blockers; no changes.
+PASS: audited facts, secrets redacted, operator accepts the plan.
+
+G1 — Hardening and workspace separation
+Implement restricted developer, SSH-key access/tunnel, safe OpenCode, distinct dev/prod boundaries, staging/test DB approach, repo checkout and least-privilege GitHub access. Host configuration changes must be individually approved and must avoid service disruption.
+PASS: negative tests demonstrate developer cannot access prod files/secrets/db/deploy; OpenCode port not public; SSH recovery verified.
+
+G2 — Full-stack foundation
+Monorepo apps/web, apps/api, packages/domain, contracts, infra and tests. Versioned config, lint/format/type/test/build, DB migration tooling, API health endpoint and basic shell. Separate dev/test Compose only after security checks.
+PASS: all reproducible commands pass, browser UI and API health work in dev.
+
+G3 — Identity + authoritative persistence
+Single-owner bootstrap, Argon2id password, session cookie security, ownership checks, Postgres migrations, server-side CRUD/validation and settings. No public signup.
+PASS: auth/CSRF/rate-limit/authorization tests, database transaction tests, login/logout flows, API integration tests.
+
+G4 — Task domain and web UX
+Quick capture, complete/reopen/delete, details, Today/Inbox/Upcoming/Completed/All, filters/search/tags/subtasks, optimistic UX with server persistence.
+PASS: create/edit/reload from server, validation, keyboard and mobile flows.
+
+G5 — Two-device ONLINE sync
+Shared revision semantics, mutation IDs, cursor change log, delete tombstones, conflict response, initial bootstrap and A/B device reconciliation.
+PASS: simulate A/B edits, retry, conflict, deletion, reconnect, cross-account isolation; no data loss.
+
+G6 — Calendar and deterministic schedule suggestions
+Day/week/month, reschedule with conflict checks, deterministic pure scheduling, dueDate versus scheduled time, timezone/DST tests, preview/accept/reject.
+PASS: full domain and UI tests, no silent overlap or write prior to acceptance.
+
+G7 — Reliable offline-first behavior
+Dexie cache/outbox, PWA/service worker only if appropriate, offline edits, retry/idempotency, explicit conflict UI, logout safeguards.
+PASS: airplane mode edit, restart, reconnect, simultaneous device edits and error recovery with no silent data loss.
+
+G8 — Settings, import/export and data safety
+User settings/timezone, JSON backup validation + preview + merge/replace confirmation, transactional import, DB encrypted offsite backups and restore verification.
+PASS: invalid import does not alter data, successful import syncs, restore drill produces verified records.
+
+G9 — Release readiness and controlled deploy
+Security checklist, full E2E, accessibility, responsive screenshots, monitoring/alerts, TLS, staging acceptance, approved migration, rollback/runbook, CI, production deploy with human approval.
+PASS: documented evidence links, reviewed production release, health checks and backup/restore readiness; no critical known defects.
+
+## Engineering and reporting rules for every gate
+- Before modifications: git branch/status, inspect existing code, reproduce baseline.
+- Implement one coherent slice; use feature branch and meaningful commits.
+- Run actual format check, lint, typecheck, tests, production build; use isolated test DB and Playwright when applicable.
+- Include exact commands, logs PASS/FAIL/BLOCKED, screenshots where relevant, commit SHA, files changed, remaining risks.
+- Gate is COMPLETE only after operator acceptance; Muse must stop at gate boundary.
+- Never run production commands, modify firewall/SSH settings, generate live credentials, migrate production schema, force-push, merge to main or expose ports without explicit scoped approval.
+
+## Immediate next action
+Use PROMPT_FOR_MUSE_V2.md for G0 Linux audit. Do not execute old M0/M1 local-only implementation prompt.
