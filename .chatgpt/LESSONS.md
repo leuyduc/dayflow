@@ -50,3 +50,11 @@ Lesson: Do not make all coding progress contingent on production-server setup. U
 ## 2026-10-12 — Use dependency lockfile and check plugin compatibility
 Observed: Initial web typecheck/build failed due to Vite 6 workspace version coexisting with Vite 7 plugin types. Aligning to Vite 7, regenerating lockfile and rerunning the full checks resolved the issue.
 Lesson: Resolve npm dependency versions before trusting typecheck/build, retain a lockfile and verify actual commands. Limit Prettier to new source rather than rewriting historical design documents simply to pass a style gate.
+
+## 2026-10-12 — Turn passive API and UI smoke tests into reproducible checks
+Observed: A successful local API response/HTTP 200 did not cover navigation behavior, offline state or real mobile layout. Fastify injection tests, React Testing Library and Playwright Core (with installed Chrome) verified these with 10 unit/component/API tests plus desktop/mobile browser smoke.
+Lesson: Prefer testable app factories and repeatable browser smoke scripts over manual claims. Keep screenshots local and ignored when not intended for publication; track independent CI separately from local green tests.
+
+## 2026-10-12 — Commit hygiene and remote reconciliation
+Observed: Git's staged whitespace check caught a README trailing-space issue before commit. After committing, GitHub rejected push because a documentation-only commit had been added remotely since local clone.
+Lesson: Correct whitespace rather than bypassing QA; on non-fast-forward rejection, fetch and inspect remote-only commits/changed files, then rebase/merge safely. Never force-push merely to advance a milestone. Always verify local/remote synchronization and record the final commit SHA.
