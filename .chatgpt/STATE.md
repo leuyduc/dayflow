@@ -16,7 +16,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G0 — Linux audit | AUDITED | Ubuntu Linux host, existing production services, Docker, Nginx, Node present; OpenCode not found in root PATH as of audit; capacity and isolation risk noted |
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
-| G3 — Authentication + database | NOT STARTED | |
+| G3 — Authentication + database | PARTIAL DEVELOPMENT IMPLEMENTATION / NOT ACCEPTED | `feat/g3-auth-db` at `d97343d`: auth API, Drizzle schema, PGlite constraints, 21/21 tests and CI success. Real TCP PostgreSQL integration, bootstrap, G3 signoff blocked by absent isolated DB |
 | G4 — Task UI/API | NOT STARTED | |
 | G5 — Two-device online sync | NOT STARTED | |
 | G6 — Calendar + scheduling | NOT STARTED | |
@@ -102,3 +102,14 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Queried public GitHub Actions runs for exact SHA `920fa74cf5ce50a8f20ffd25f8768978e0cff891`: `dayflow-foundation-ci` run **38163990311** status `completed`, conclusion `success`. URL: https://github.com/leuyduc/dayflow/actions/runs/38163990311 .
 - This supersedes earlier `CI UNVERIFIED` statements **for SHA 920fa74 only**. The status is independent GitHub Actions evidence, distinct from local test results. G2 full acceptance remains pending, since DB/migrations/other architectural work and operator gate acceptance are not complete.
 - Worktree was clean after rebase and push of feature-branch commit; remaining risk G1-A exposed root key and G1-C Linux agent isolation unchanged.
+
+## G3 authentication and schema checkpoint — 2026-10-12
+- User authorized G3 work in separate DEVELOPMENT environment, no production changes. Verified G2 branch `feat/fullstack-foundation` clean at `920fa74` and CI SUCCESS before branching.
+- New G3 source branch: `feat/g3-auth-db`; pushed code commit `d97343d7aef1975597bfc8544a70796d1ea1807a`; Windows working tree clean after normalizing tracked CRLF files.
+- Implemented Argon2id owner login, SHA-256-hashed random session tokens, HttpOnly/SameSite=Strict cookies (Secure in production), server-stored revocation and expiry, strict Origin checks, HMAC CSRF header for logout, rate limiting, owner-scoped protected task reads. No public signup.
+- Drizzle PostgreSQL migration generated for `users`, `sessions`, `tasks`, `settings`. SQL constraints and foreign keys tested in isolated in-memory PGlite PostgreSQL engine. A typed `pg.Pool`/Drizzle store adapter and dev-only migration/bootstrap scripts included.
+- Windows dev has NO Docker/psql/PostgreSQL server. Actual PostgreSQL network adapter, live migration, account bootstrap and real DB-backed auth integration **NOT TESTED**; no existing Ubuntu/prod DB used. The G3 status is PARTIAL / NOT ACCEPTED, not "fully done".
+- Local quality checks: typecheck PASS, ESLint PASS, Vitest **21/21 PASS**, build PASS, format PASS, Chrome desktop/mobile smoke PASS. Drizzle SQL generated successfully.
+- Independent GitHub Actions for exact SHA `d97343d7aef1975597bfc8544a70796d1ea1807a`: run `38165238012` `completed/success`, https://github.com/leuyduc/dayflow/actions/runs/38165238012 .
+- G3 evidence on source branch: `docs/V2_G3_IMPLEMENTATION_PROGRESS.md`; no Linux config, production secrets, service, or database changes. G1-A old root key and G1-C isolation remain outstanding.
+- Next: commission a separate LOCAL development PostgreSQL service and run real adapter+migration+login/owner isolation tests; separately review security configuration and gate acceptance. Do not deploy G3 to Ubuntu or use live production database.
