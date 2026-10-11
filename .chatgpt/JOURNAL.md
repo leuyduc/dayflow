@@ -85,3 +85,12 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Queried the public repository GitHub Actions API for the exact final feature-branch commit SHA `920fa74cf5ce50a8f20ffd25f8768978e0cff891`.
 - Run `38163990311` (`dayflow-foundation-ci`) returned `status=completed` and `conclusion=success`; https://github.com/leuyduc/dayflow/actions/runs/38163990311 .
 - Independent CI is verified for this SHA. Windows local checks and real-browser smoke also passed. G2 complete production functionality and formal operator signoff remain OUTSTANDING; Linux server untouched.
+
+## 2026-10-12 — G3 development milestone 1: owner authentication and PostgreSQL schema
+- Recovered ChatGPT STATE/JOURNAL/LESSONS, read V2 architecture/master/sync specs, checked Git `feat/fullstack-foundation` clean at `920fa74` and exact-commit CI success. Windows Docker, psql and PostgreSQL absent; localhost DB ports unused. No Ubuntu actions.
+- Created dedicated `feat/g3-auth-db` from verified G2 branch. Installed Drizzle, node-postgres, @node-rs/argon2, Fastify cookie/rate-limit, PGlite and typings with `--ignore-scripts`, lockfile updated; no credentials read or created.
+- Auth implementation: owner-only login (no signup), Argon2id verify, random hashed server sessions with expiration/revocation, secure cookie defaults, rate limit, Origin/CSRF protections, protected owner-scoped task list. PostgreSQL store adapter behind typed `AuthStore`.
+- Generated Drizzle SQL migration for 4 tables (`users`, `sessions`, `tasks`, `settings`). Created local-only guarded migration/bootstrap commands refusing remote/prod-looking database URLs. Never ran them against any real DB. PGlite migration constraints and fake-store API auth behavior tested.
+- Quality: lint initially flagged unused import in PG adapter; removed import and reran full checks. Final test suite 21/21 PASS (including 6 auth, 3 schema migration, 2 DB guard tests), typecheck/lint/build/format PASS, browser smoke PASS.
+- Staged diff checked, committed/pushed `d97343d7aef1975597bfc8544a70796d1ea1807a` to `feat/g3-auth-db`. Remote CI `dayflow-foundation-ci` run `38165238012` completed SUCCESS for that SHA. Windows dev working tree clean.
+- Limitations: no real PostgreSQL server/integration, no real owner provisioned, no login UI/CRUD. G3 status PARTIAL NOT ACCEPTED; G1 critical SSH/isolation blockers still open. No production/Ubuntu changes.
