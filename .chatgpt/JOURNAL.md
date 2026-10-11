@@ -59,3 +59,8 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Used Windows MCP to inspect OpenCode 1.19.0. Muse Spark 1.3 appears in the model list; CLI supports noninteractive run.
 - Started harmless one-line Muse connection probe on Windows. No output returned; process remained waiting. Terminated only the probe session; subsequent Desktop Commander session listing was empty. Muse runtime NOT VERIFIED.
 - No Linux changes and no DayFlow implementation. Gate status unchanged: G1-C isolation failed, G1-D pending.
+
+## 2026-10-12 — OpenCode Go provider smoke retry
+- Checked CLI provider credential status: OpenCode Go, OpenRouter and nvidia-glm are configured (provider names only; no secrets retrieved).
+- A minimal `opencode-go/muse-spark-1.3-contributor` response test produced no output and remained blocked. Terminated only that test process.
+- Result: Muse runtime not verified; do not hand off coding yet. No server or repo changes.
