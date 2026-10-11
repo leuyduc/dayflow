@@ -22,3 +22,11 @@ Lesson: Mark G1-B PARTIAL, G1 overall NOT PASSED, and prevent autonomous Muse fr
 ## 2026-10-12 — Distinguish ChatGPT context from Muse context
 Observed: ChatGPT conversation/runtime context can be lost or compacted; Muse runs in OpenCode, which manages its own session/context.
 Lesson: Store checkpoint, journal and lessons in `.chatgpt/`; each ChatGPT session rereads the concise state and verifies live progress. **Do not impose repeated full-document reads or external cache synchronization on Muse**, and do not spend Muse tokens on ChatGPT recovery.
+
+## 2026-10-12 — Account permissions are not network isolation
+Observed: `dayflow-dev` lacked sudo/docker group privileges, yet TCP handshakes to three existing host loopback services succeeded. No database authentication or secret reads were attempted.
+Lesson: Never treat a dedicated Unix user or Docker socket DAC mode as sufficient for running autonomous code beside production. Require verified namespace/VM boundaries, explicit egress restrictions and deny-access tests before agent execution; distinguish TCP reachability from data access.
+
+## 2026-10-12 — Blocked negative tests cannot be claimed successful
+Observed: remote tool safety policy blocked direct sensitive-file permission probes, though filesystem modes could be inspected safely.
+Lesson: Record access-denial tests as BLOCKED/UNVERIFIED and base recommendations on what was genuinely observed. Do not bypass tool safety controls just to manufacture a PASS.
