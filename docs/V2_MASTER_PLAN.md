@@ -29,7 +29,7 @@ Operator workflow: User approves direction/releases; ChatGPT coordinates/verifie
 | G1 | Security, restricted access and Linux OpenCode | Root/dev auth, privilege-denial/isolation tests, local-only agent access, no prod exposure | IN PROGRESS, NOT PASSED |
 | G2 | Full-stack foundation: monorepo web/api/domain/contracts/infra/tests | Dev web + API, type/lint/test/build and browser smoke | WINDOWS QA VERIFIED (10/10 tests, real Chrome smoke); GitHub Actions SUCCESS for 920fa74; GATE NOT ACCEPTED |
 | G3 | Owner bootstrap/auth + PostgreSQL and migrations | Login/logout, CSRF/rate limit, server-owned CRUD/transactions, negative access tests | TECHNICAL GATE ACCEPTED BY USER (a3074d9, CI 38166399632); G1 production security still blocks deployment |
-| G4 | Tasks + personal planning UI | Real create/edit/complete/delete/reload, filtering, accessible/mobile flows | DEVELOPED ON WINDOWS (b435f4d), local QA 27 tests + PostgreSQL + Chrome PASS; CI/acceptance pending |
+| G4 | Tasks + personal planning UI | Real create/edit/complete/delete/reload, filtering, accessible/mobile flows | DEVELOPED ON WINDOWS (b435f4d), local QA 27 tests + PostgreSQL + Chrome PASS; GitHub Actions 38167837603 SUCCESS; operator acceptance pending |
 | G5 | Two-device online sync | Idempotent changes, revision conflict UI, tombstones, reconnect A/B tests | NOT STARTED |
 | G6 | Day/week/month calendar + deterministic scheduling | No silent overlaps, timezone/DST/deadline/buffer tests, save only accepted suggestion | NOT STARTED |
 | G7 | Offline-first and outbox | Offline edits, restart/reconnect, conflict decisions, no silent data loss | NOT STARTED |
