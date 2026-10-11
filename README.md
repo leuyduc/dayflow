@@ -73,3 +73,19 @@ Auth-only routes:
 - `GET /api/tasks` (requires session; server-side owner-scoped read-only result). Task mutation/UI is G4.
 
 For checkpoint details and untested integration limits see `docs/V2_G3_IMPLEMENTATION_PROGRESS.md`.
+
+## Reproducible live PostgreSQL integration — G3
+
+For an isolated **Windows development** PostgreSQL 17.10 test without Docker, install the optional binary wrapper only in the ignored sandbox directory:
+
+```powershell
+npm ci --ignore-scripts
+npm run build -w @dayflow/api
+New-Item -ItemType Directory -Force -Path .artifacts/postgres-sandbox
+npm install --prefix .artifacts/postgres-sandbox embedded-postgres@17.10.0-beta.17 --ignore-scripts --no-audit --no-fund
+npm run test:postgres:local
+```
+
+The script generates disposable credentials, binds PostgreSQL to loopback, creates a separate test database, validates migrations and real HTTP-backed session/authorization, then stops the server. No production database is involved. On GitHub Actions, a `postgres:17` CI service runs the same test in external mode with a public test-only credential, separate from the normal lint/build/unit checks.
+
+Evidence and limitations: `docs/V2_G3_LIVE_POSTGRES_EVIDENCE.md`. Do not use the prerelease test wrapper as a production database.

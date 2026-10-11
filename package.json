@@ -22,7 +22,9 @@
     "test:browser": "node scripts/browser-smoke.mjs",
     "db:generate": "drizzle-kit generate --config apps/api/drizzle.config.ts",
     "db:migrate:dev": "npm run db:migrate:dev -w @dayflow/api",
-    "db:bootstrap:dev": "npm run db:bootstrap:dev -w @dayflow/api"
+    "db:bootstrap:dev": "npm run db:bootstrap:dev -w @dayflow/api",
+    "test:postgres:local": "node scripts/test-g3-postgres.mjs",
+    "test:postgres:ci": "node scripts/test-g3-postgres.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

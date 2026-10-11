@@ -37,3 +37,11 @@ Never use these commands against production or another project's database. Never
 
 ## Next gate step
 Review schema/auth tests and CI; obtain an isolated PostgreSQL service for real end-to-end integration; run negative ownership and migration tests. Keep G1 security remediation independent and **do not** deploy or execute autonomous Muse on Linux until its isolation passes.
+
+## G3: actual localhost PostgreSQL integration (2026-10-12)
+
+**Update to the earlier checkpoint above:** The original environment limitation (no PostgreSQL server) was subsequently addressed by a temporary local Windows PostgreSQL 17 cluster, without Docker or Linux involvement. The actual TCP `pg.Pool`/Drizzle adapter, migration, one-owner bootstrap, HTTP login/cookies, owner task filtering and logout/CSRF/session revocation have now passed. See [V2_G3_LIVE_POSTGRES_EVIDENCE.md](V2_G3_LIVE_POSTGRES_EVIDENCE.md).
+
+A reproducible development-only script now exists at `scripts/test-g3-postgres.mjs`, invoked by `npm run test:postgres:local`. A separate GitHub Actions job uses the same script against an ephemeral `postgres:17` CI service; exact commit status must be independently confirmed before acceptance.
+
+G3 still requires a security review and operator gate acceptance. This improvement does not remediate the outstanding G1 server isolation and previously exposed root-key concerns.

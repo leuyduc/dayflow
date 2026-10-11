@@ -21,3 +21,34 @@ jobs:
       - run: npm run test
       - run: npm run build
       - run: npm run format:check
+
+  g3-postgres-integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: dayflow_dev
+          # Ephemeral CI container only. Never reuse for deployment.
+          POSTGRES_PASSWORD: ci-only-public-test-password
+          POSTGRES_DB: dayflow_test_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dayflow_dev -d dayflow_test_ci"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build -w @dayflow/api
+      - run: npm run test:postgres:ci
+        env:
+          DAYFLOW_TEST_PG_EXTERNAL: "1"
+          DAYFLOW_DB_ENV: development
+          DATABASE_URL: postgres://dayflow_dev:ci-only-public-test-password@127.0.0.1:5432/dayflow_test_ci
