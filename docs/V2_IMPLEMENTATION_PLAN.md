@@ -59,5 +59,7 @@ PASS: documented evidence links, reviewed production release, health checks and 
 - Gate is COMPLETE only after operator acceptance; Muse must stop at gate boundary.
 - Never run production commands, modify firewall/SSH settings, generate live credentials, migrate production schema, force-push, merge to main or expose ports without explicit scoped approval.
 
-## Immediate next action
-Use PROMPT_FOR_MUSE_V2.md for G0 Linux audit. Do not execute old M0/M1 local-only implementation prompt.
+## Current handoff (2026-10-12)
+G0 has been audited. G1-B restricted-account SSH access partially passed, but overall G1 is NOT accepted: the exposed old root key is still authorized (G1-A deferred), and G1-C production isolation remains unverified. Next approved work is only the explicitly scoped G1-C isolation plan/checks, not OpenCode installation, autonomous Muse operation or application coding.
+
+**Context discipline:** `.chatgpt/` is an operator-only recovery record for ChatGPT. Muse/OpenCode manages its own context and cache. Do not add repeated full-document reads or replay of ChatGPT's journal to Muse after every step. This does not relax normal project inspection or verification when actually needed.
