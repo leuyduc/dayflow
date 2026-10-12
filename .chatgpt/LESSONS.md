@@ -122,3 +122,23 @@ Lesson: Record exact source SHA, workflow run, job and test step. A local browse
 ## 2026-10-12 — Single-branch clone can hide later feature branch tracking
 Observed: a G2 `--single-branch` clone had a narrow `remote.origin.fetch`, so new G4 remote branch tracking was absent even after successful push; ordinary `git fetch origin` did not create that tracking ref.
 Lesson: On subsequent feature branches inspect `git config --get-all remote.origin.fetch` and `git branch -vv`. Restore a wildcard fetch refspec only in the local checkout, fetch and set upstream, then compare exact HEAD/origin SHA. Never treat lack of a tracking ref as proof of remote data loss.
+
+## 2026-10-12 — Cursor allocation must share the task transaction
+Observed: G4 direct writes had optimistic revisions/tombstones but no ordered commit feed. G5 now locks the owner's sync_state row FOR UPDATE, writes task+cursor+change_log+processed UUID in one PostgreSQL transaction, and only advances cursor for accepted writes. In PostgreSQL 17 tests, competing same-revision A/B edits admitted one winner; four concurrent writes yielded contiguous cursor order.
+Lesson: Never allocate cursor from independent PostgreSQL sequences or outside a commit transaction. Make **all** writers use the common lock (including legacy CRUD), or unlogged writes will break cross-device consistency. Test concurrency under real PostgreSQL.
+
+## 2026-10-12 — Zod refined objects cannot be freely omitted
+Observed: Calling `.omit({ expectedRevision:true })` on a Zod v4 object that already had a `.refine(...)` threw at module import; API test suites failed even though TS compiled.
+Lesson: Compose patch schemas from an unrefined common object and apply final refinement afterward. A passing typecheck does not prove Zod module-runtime schema composition succeeds; run actual tests before claiming PASS.
+
+## 2026-10-12 — JSONB preserves values, not JavaScript field order
+Observed: A duplicate mutation retried correctly but stored PostgreSQL JSONB reordered object keys. A test comparing `JSON.stringify` of original and replayed results reported a false failure.
+Lesson: Compare semantic result fields or canonicalized JSON, including mutation kind/cursor/task/revision, rather than insertion order. Separately test that replay did not append a second event.
+
+## 2026-10-12 — Update old test invariants when legitimate state expands
+Observed: G3 old test assumed exactly one owner task. After G5 created legitimate additional owner tasks, the same test failed even though tenant isolation was still correct.
+Lesson: Assert invariant (owner task present, foreign task absent), not brittle global fixture cardinality. Keep cross-owner access and tombstones tested explicitly.
+
+## 2026-10-12 — G5 API readiness is not G7 offline readiness
+Observed: Secure G5 push/pull/bootstrap and online React reload exist, while browser writes still use G4 HTTP routes and periodical full snapshots; no browser durable offline outbox or direct delta feed consumption has been implemented.
+Lesson: Report API sync and UI online-refresh separately, and keep delta-client integration, visible conflict-resolution controls, and offline durability as explicit acceptance items instead of claiming they are automatically complete.
