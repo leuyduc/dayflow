@@ -182,3 +182,9 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Commit `c384f977b1710185b6a1c7963f71eeb4b2e4bacc` matched GitHub Actions run `38198257304` at https://github.com/leuyduc/dayflow/actions/runs/38198257304 ; status completed, conclusion SUCCESS.
 - All three jobs individually SUCCESS: `checks` (typecheck, ESLint, Vitest, build, format), `online-sync-postgres-integration` (actual `npm run test:postgres:ci`), and `g4-browser-postgres-e2e` (actual `npm run test:browser:g4:postgres` with Chrome). This independently reproduces the amended sync E2E harness on Linux CI.
 - G5 development QA PASS but formal operator Gate G5 acceptance NOT granted; client delta feed incomplete, durable offline queue reserved for G7; Ubuntu/G1 security blockers unchanged. Next: draft G5 review PR without merge, then checkpoint again.
+
+## 2026-10-12 — G5 draft review PR #2 created, not merged
+- Verified latest G5 HEAD `c384f977b1710185b6a1c7963f71eeb4b2e4bacc` and exact CI `38198257304` all three jobs SUCCESS.
+- Created DRAFT pull request https://github.com/leuyduc/dayflow/pull/2 from `feat/g5-online-sync` into technically accepted `feat/g4-task-crud`. Scope covers transactional ordered server sync, explicit React edit conflict handling, actual local+CI test evidence, plus incomplete delta and broader conflict coverage.
+- NO merge, release, G5 human acceptance, production data access or Linux service change.
+- Next approved development slice: online incremental `/api/sync/bootstrap` + `pull` client consumption (G5 only, not offline G7); checkpoint before and after the next logical step.
