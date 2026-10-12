@@ -1,13 +1,13 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
-## G5 React incremental pull/bootstrap — IMPLEMENTED / WINDOWS QA PASS / EXACT-SHA CI PENDING (2026-10-12)
+## G5 React incremental pull/bootstrap — LOCAL + INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
 
 - Active workflow `chatgpt-direct-v1`. Scope: G5 Windows development only. G4 technically accepted, G5 Gate NOT accepted, G1 production/security NOT PASSED.
 - Source branch `feat/g5-online-sync` **`bddaea29843c0a684ba13f9f0191919f78dc623a`**, pushed and Windows worktree clean at origin. Base was `c384f97`; Draft PR #2 remains for G5 review, no merge.
 - React TaskWorkspace gets consistent task snapshot and owner cursor at login using `/api/sync/bootstrap`; focus/reconnect/visible/manual timer use ordered `/api/sync/pull` with 100-record pagination, tombstone removal, 409 cursor-ahead rebootstrap, guards against stale in-flight response. Creates/completes/deletes retain server-authoritative authenticated G4 routes; edit conflict choices from previous slice remain.
 - Added fake change-log & cursor tests for >100 updates across pages, tombstone, cursor-ahead snapshot recovery. Updated Chrome mock; aligned `AGENTS.md` and `START_HERE.md` on feature branch with ChatGPT-direct workflow.
 - LOCAL QA: **32/32 Vitest PASS**, TypeScript strict PASS, ESLint PASS, build PASS, Prettier PASS, real Chrome→Vite/Fastify/PostgreSQL E2E PASS, Chrome mocked browser PASS, PostgreSQL 17 real two-device sync/invariants PASS; git diff whitespace check PASS. No Ubuntu or production access.
-- **CI for final `bddaea2` has NOT yet been independently verified** at this checkpoint. Next EXACT step: query GitHub Actions by the final SHA, verify each job and test step, then update STATE/JOURNAL and READ BACK. Do not mark CI PASS without evidence.
+- **CI independently VERIFIED** for exact source SHA `bddaea29843c0a684ba13f9f0191919f78dc623a`: GitHub Actions runs `38199249827` and `38199246279` each completed SUCCESS, each 3/3 jobs SUCCESS (`checks` incl. TypeScript/lint/test/build/format; `online-sync-postgres-integration` PostgreSQL 17 test; `g4-browser-postgres-e2e` Chrome→PostgreSQL). https://github.com/leuyduc/dayflow/actions/runs/38199249827 . Next: refresh G5 draft PR #2 to reflect implemented delta client and remaining Gate gaps, without merge or promotion. After PR update, checkpoint/read-back.
 - Remaining Gate G5: broad non-edit conflicts, independent two-real-browser simultaneous-edit E2E, further sync hardening. No durable offline outbox until G7. G1-A old root key and G1-C inadequate isolation block production.
 
 ## G5 client edit-conflict slice — LOCAL AND INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
@@ -49,7 +49,7 @@ ChatGPT directly implements DayFlow React web, Fastify API, PostgreSQL-backed ta
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
 | G4 — Task UI/API | TECHNICALLY ACCEPTED BY USER / G1 SECURITY STILL BLOCKS PRODUCTION | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
-| G5 — Two-device online sync | DELTA CLIENT QA PASS / NEW CI PENDING / GATE NOT ACCEPTED | `feat/g5-online-sync` `bddaea2`; incremental bootstrap/pull, tombstones, 409 fallback, 32 Vitest + Chrome/PostgreSQL Windows PASS; new CI unverified; offline queue G7 |
+| G5 — Two-device online sync | DELTA CLIENT + CI PASS / GATE NOT ACCEPTED | `feat/g5-online-sync` `bddaea2`; bootstrap/pull, tombstones, 409 fallback, 32 Vitest PASS, Chrome/PostgreSQL E2E PASS, CI 38199249827 and 38199246279 all jobs SUCCESS; offline queue G7 |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
 | G8 — Import/export + DB backups | NOT STARTED | |
