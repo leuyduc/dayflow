@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 export type TaskItem = {
   id: string;
@@ -24,6 +24,41 @@ type SyncEditResult =
 
 type SyncPushResponse = { results: SyncEditResult[] };
 
+type SyncChange = {
+  cursor: number;
+  entityId: string;
+  operation: "create" | "update" | "delete";
+  payload: TaskItem | { id: string; revision: number; deletedAt: string };
+};
+type SyncPullResponse = {
+  changes: SyncChange[];
+  nextCursor: number;
+  hasMore: boolean;
+};
+type SyncBootstrapResponse = { tasks: TaskItem[]; cursor: number };
+
+function applyServerChanges(current: TaskItem[], changes: SyncChange[]): TaskItem[] {
+  const next = new Map(current.map((task) => [task.id, task]));
+  for (const change of changes) {
+    if (change.operation === "delete") {
+      next.delete(change.entityId);
+    } else {
+      const task = change.payload as TaskItem;
+      if (
+        task.id !== change.entityId ||
+        typeof task.title !== "string" ||
+        !Number.isSafeInteger(task.revision)
+      ) {
+        throw new Error("Dữ liệu đồng bộ không hợp lệ.");
+      }
+      next.set(change.entityId, task);
+    }
+  }
+  return [...next.values()].sort(
+    (a, b) => b.updatedAt.localeCompare(a.updatedAt) || b.id.localeCompare(a.id),
+  );
+}
+
 async function responseJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     if (response.status === 409) throw new Error("Dữ liệu đã được thay đổi. Đã tải lại danh sách.");
@@ -47,22 +82,67 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
   const [editDescription, setEditDescription] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
   const [editPriority, setEditPriority] = useState<TaskItem["priority"]>("medium");
+  const cursorRef = useRef<number | null>(null);
+  const snapshotVersion = useRef(0);
+  const pullingRef = useRef(false);
 
   async function reload() {
-    const response = await fetch("/api/tasks", { credentials: "same-origin", cache: "no-store" });
-    const result = await responseJson<{ tasks: TaskItem[] }>(response);
+    const version = ++snapshotVersion.current;
+    const response = await fetch("/api/sync/bootstrap", {
+      credentials: "same-origin",
+      cache: "no-store",
+    });
+    const result = await responseJson<SyncBootstrapResponse>(response);
+    if (version !== snapshotVersion.current) return;
+    cursorRef.current = result.cursor;
     setTasks(result.tasks);
+  }
+
+  // Read the ordered online change feed. Never advance the cursor for a failed page.
+  // A newer bootstrap invalidates an older in-flight pull.
+  async function pullChanges() {
+    const initial = cursorRef.current;
+    if (initial === null || pullingRef.current) return;
+    pullingRef.current = true;
+    const version = snapshotVersion.current;
+    let cursor = initial;
+    const changes: SyncChange[] = [];
+    try {
+      for (let page = 0; page < 20; page++) {
+        const response = await fetch(`/api/sync/pull?cursor=${cursor}&limit=100`, {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        if (response.status === 409) {
+          // Cursor expired/ahead: replace only with a consistent server snapshot.
+          await reload();
+          return;
+        }
+        const result = await responseJson<SyncPullResponse>(response);
+        if (
+          !Number.isSafeInteger(result.nextCursor) ||
+          result.nextCursor < cursor ||
+          (result.hasMore && result.nextCursor === cursor)
+        ) {
+          throw new Error("Dữ liệu đồng bộ không hợp lệ.");
+        }
+        changes.push(...result.changes);
+        cursor = result.nextCursor;
+        if (!result.hasMore) break;
+      }
+      if (snapshotVersion.current !== version) return;
+      setTasks((current) => applyServerChanges(current, changes));
+      cursorRef.current = cursor;
+    } finally {
+      pullingRef.current = false;
+    }
   }
 
   useEffect(() => {
     let active = true;
-    fetch("/api/tasks", { credentials: "same-origin", cache: "no-store" })
-      .then(responseJson<{ tasks: TaskItem[] }>)
-      .then((result) => {
-        if (active) {
-          setTasks(result.tasks);
-          setError("");
-        }
+    void reload()
+      .then(() => {
+        if (active) setError("");
       })
       .catch(() => {
         if (active) setError("Không tải được danh sách. Hãy kiểm tra kết nối.");
@@ -72,24 +152,21 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
       });
     return () => {
       active = false;
+      snapshotVersion.current++;
     };
   }, []);
 
-  // G5 online-only convergence: refresh server-authoritative state on focus,
-  // reconnect and a light interval. This does NOT claim a durable offline outbox.
+  // G5 online-only convergence: pull deltas on focus, reconnect and interval.
+  // No offline outbox or acknowledgment of offline writes (reserved for G7).
   useEffect(() => {
     let active = true;
     async function syncVisible() {
       if (!active || document.visibilityState === "hidden" || !navigator.onLine) return;
       try {
-        const response = await fetch("/api/tasks", {
-          credentials: "same-origin",
-          cache: "no-store",
-        });
-        const result = await responseJson<{ tasks: TaskItem[] }>(response);
-        if (active) setTasks(result.tasks);
+        if (cursorRef.current === null) await reload();
+        else await pullChanges();
       } catch {
-        // Keep last visible data; a failed refresh must not destroy local UI state.
+        // Keep last visible state; do not wipe data or move cursor on network errors.
       }
     }
     const onVisible = () => {
@@ -282,7 +359,7 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
           className="task-action"
           disabled={busy || loading}
           onClick={() =>
-            void reload()
+            void (cursorRef.current === null ? reload() : pullChanges())
               .then(() => setError(""))
               .catch(() =>
                 setError("Không thể tải thay đổi từ thiết bị khác. Thử lại khi có mạng."),

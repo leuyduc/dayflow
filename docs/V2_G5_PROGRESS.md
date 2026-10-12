@@ -35,14 +35,15 @@ Status: **SERVER ONLINE SYNC IMPLEMENTED AND TESTED ON WINDOWS DEV; G5 FORMAL AC
   - G3/G4 auth/session/CRUD regressions and cleanup still PASS
 - Vitest 28/28, TypeScript, ESLint, build, format PASS. Previous G4 Chrome mocked UI and full real Chrome/Vite/Fastify/PostgreSQL tests also PASS.
 
-## Client online refresh (G5 lightweight implementation)
-- TaskWorkspace now offers `Đồng bộ ngay` and reloads server-authoritative tasks on browser focus, tab-visible, reconnect and a lightweight interval while online. This allows A/B online task-list convergence and does not store browser session tokens or an offline outbox.
-- **Current React UI uses authenticated GET /api/tasks for periodic snapshots, not incremental GET /api/sync/pull or batched push.** The incremental push/pull protocol is available and verified at API level. A future refinement should integrate the delta feed and explicit conflict-resolution controls in the UI before claiming the full end-user G5 workflow complete.
-- No offline editing/data durability claim; offline outbox stays in G7.
+## G5 online client — bootstrap and incremental change feed (latest)
+- On first login, the React TaskWorkspace calls `GET /api/sync/bootstrap` for a consistent owner-specific task snapshot and cursor. After online writes, it obtains a fresh atomic snapshot.
+- On focus, tab visibility, network reconnect, manual **Đồng bộ ngay** and a 30-second visible-tab interval, the client reads `GET /api/sync/pull?cursor=N&limit=100` and applies ordered create/update/delete changes to the list. Tombstones remove only the matching record. Multiple pages are followed in order; a stalled cursor is rejected. An HTTP 409 cursor-ahead response triggers fresh bootstrap.
+- Pull failures never wipe the existing list or advance the cursor; an in-flight pull older than a bootstrap cannot overwrite the newer snapshot. The client does not persist tokens/cursors in localStorage and does NOT claim reliable offline edits; durable outbox is G7.
+- Task edits use versioned `POST /api/sync/push` with explicit conflict review. Create/complete/reopen/delete still use legacy owner-protected REST writes backed by the same transactional G5 change log.
 
 ## Checks, CI and unresolved scope
 - Exact commit SHA and independent GitHub Actions run must be verified after pushing, especially the existing Postgres 17 integration job (now exercising G5).
-- End-to-end real two-browser event refresh, explicit user choices for edit conflicts, long-disconnected cursor-expiry/snapshot policy and load testing remain for a later G5 hardening pass.
+- Full real two-browser simultaneous edit conflict E2E, conflict choices for non-edit actions, retention-based cursor expiry policy and load testing remain. React edit conflict choices and delta-pull/409-bootstrap behavior now have component tests.
 - **G5 formal acceptance remains pending**, with G1-A exposed old root key and G1-C unproven Muse/Linux isolation remaining critical deployment blockers.
 
 ## Follow-up: online edit conflict review in React (2026-10-12)
@@ -52,4 +53,4 @@ Status: **SERVER ONLINE SYNC IMPLEMENTED AND TESTED ON WINDOWS DEV; G5 FORMAL AC
 - Missing/deleted tasks are surfaced without dropping the unsaved form. Ambiguous network failures are not automatically resubmitted; G7 will add a durable outbox for reliable replay.
 - Added React component tests for both user conflict choices, revision numbers and distinct mutation IDs. Updated mocked Chrome smoke and actual Chrome/Fastify/PostgreSQL E2E harness to register the G5 sync routes.
 - Local validation: TypeScript PASS; ESLint PASS; Vitest 30/30 PASS; build PASS; Prettier PASS; full real Chrome→Fastify→PostgreSQL persistence/reload/edit/complete/delete/logout regression PASS. A first real-browser test failed because its test app omitted the G5 sync route registration; the harness was corrected and independently rerun successfully. `npm run test:postgres:local` result and remote CI must be verified against the final commit.
-- **Remaining for complete G5:** browser delta pull/bootstrap consumption, broader conflict controls for status/delete, and independent two-browser conflict E2E. G7 offline queue is out of scope. G5 Gate acceptance and G1 production security remain pending.
+- **Remaining for complete G5:** broader conflict controls for status/delete and independent two-browser conflict E2E. G7 offline queue is out of scope. G5 Gate acceptance and G1 production security remain pending.

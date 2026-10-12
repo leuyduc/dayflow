@@ -1,43 +1,26 @@
-> **DAYFLOW V2 — ACTIVE AUTHORITY (2026-10-11)**
-> The approved direction is Linux-hosted OpenCode/Muse + web frontend + backend + PostgreSQL + authenticated cross-device synchronization.
-> Read `docs/V2_PRODUCT_DECISIONS.md`, `docs/V2_ARCHITECTURE.md`, `docs/V2_SYNC_PROTOCOL.md`, `docs/V2_INFRA_SECURITY.md`, `docs/V2_IMPLEMENTATION_PLAN.md` first.
-> V2 supersedes V1 wherever V1 says no account/backend/cloud sync or local storage is sole source of truth. The V1 files remain references for task UX, domain, scheduling and accessibility only where consistent with V2.
-> **CURRENT GATE: G0 audited; G1-B developer SSH login partially verified; G1-A key revocation deferred; G1-C isolation pending. Do NOT install/run Muse on Linux, implement DayFlow code or deploy without explicit scoped approval and isolation verification.**
-> **ChatGPT-specific continuity logs live in `.chatgpt/`; these are NOT Muse/OpenCode context/cache instructions and require no repeated reading by Muse.**
+# DayFlow V2 — Direct ChatGPT Implementation
 
-# DayFlow Agent Instructions
+> **ACTIVE (2026-10-12):** ChatGPT is the only coder and project executor. **No Muse/OpenCode implementation, delegation or separate agent cache.** Older references are historical. V2 overrides contradictory V1 local-only rules.
 
-## Mission
-Build DayFlow, a polished personal planning web app, from the specifications in `docs/`. Work autonomously from the current repository state. Do not stop for routine product or implementation questions; make sensible, documented decisions consistent with the specs.
+## Essential startup
+1. Read `START_HERE.md`, `docs/CHATGPT_EXECUTION_PROTOCOL.md` and GitHub `.chatgpt/STATE.md` on `design/linux-fullstack-v2`.
+2. Verify current target feature branch HEAD, GitHub PR/CI and only relevant latest JOURNAL/LESSONS and task-specific V2 specs.
+3. Confirm user-approved Gate scope, risks and evidence target. Do not treat CI PASS as Gate acceptance.
 
-## Required workflow
-1. Read `START_HERE.md` and every file in `docs/` before coding.
-2. Inspect the repository and current branch. Preserve existing work; do not reset or overwrite user changes.
-3. Implement in the order in `docs/IMPLEMENTATION_PLAN.md`, keeping the app runnable after each milestone.
-4. Install dependencies using the repository's package manager. Do not silently switch stacks.
-5. Run formatting/linting, type checks, unit tests, and production build. Fix failures caused by your changes.
-6. Add or update tests for meaningful behavior. If browser tooling is available, run the critical Playwright flows.
-7. Update README with setup, scripts, architecture overview, and known limitations.
-8. Finish with a concise report: what shipped, key files, commands/tests and outcomes, remaining issues.
+## Mandatory per-step loop
+For **EVERY independently verifiable logical step** (feature, QA, fix, PR, migration, gate substep):
+- **BEFORE:** refetch GitHub STATE, branch HEAD and relevant source; mark IN_PROGRESS for long/interrupted-risk work.
+- **EXECUTE:** ChatGPT directly edits code/docs and runs available tests; no delegated agent.
+- **AFTER:** update STATE for ALL G0–G9 plus current step/commit/CI/acceptance/blockers/next action; append JOURNAL; commit.
+- **READ BACK:** refetch and READ persisted STATE plus target HEAD **before doing another step**. Stop if read-back fails. New chat must recover from GitHub, not conversation cache.
 
-## Product constraints
-- MVP is local-first. Persist user data in IndexedDB; the app must work without an account or backend.
-- Do not add AI features, cloud sync, authentication, collaboration, billing, or analytics to the MVP.
-- Include backup export and restore/import with validation and safe failure behavior.
-- Avoid data loss: destructive actions require confirmation or a reversible path where practical.
-- Use accessible semantic controls, keyboard support, clear empty/loading/error states, and responsive layouts.
-- Keep domain logic independent from UI and storage adapters. Use small modules and explicit types.
+Full instructions: `docs/CHATGPT_EXECUTION_PROTOCOL.md`.
 
-## Engineering standards
-- TypeScript strict mode; avoid `any` unless justified at a boundary.
-- Store timestamps as ISO strings and represent date-only values explicitly; do not mix local dates with UTC dates carelessly.
-- Keep scheduling logic deterministic and independently unit tested.
-- Do not invent features outside the specs when they add complexity. Record any necessary deviation in README.
-- Never commit secrets, tokens, personal data, or generated local database contents.
-- Do not merge this branch into `main`. Work only on the current feature branch unless the user explicitly instructs otherwise.
+## Product and constraints
+DayFlow V2: React/Vite/TypeScript web, Fastify/Zod API, PostgreSQL/Drizzle authority, secure session, multi-device sync (G5), scheduling/calendar (G6), IndexedDB offline queue (G7), safe backup/import (G8) and controlled release (G9). No AI assistant embedded in the product. Strict domain logic and authorization, deterministic date/time rules, accessible responsive UI.
 
-## Definition of done
-- The app starts using documented commands.
-- Core task CRUD, calendar views, schedule suggestions/editing, local persistence, and backup/restore work.
-- Tests, typecheck, and production build pass, or any environment-blocked check is clearly documented.
-- No dead primary controls, placeholder-only core screens, or unexplained console errors.
+## Safety and engineering
+- Do not merge or force-push to `main` or deploy without user permission. Protect other workers' new commits, verify exact SHAs.
+- G1-A old root key + G1-C Linux dev isolation remain security blockers; former G1-D OpenCode installation is retired (NOT passed). Windows/test-CI coding authorization never implies production server access.
+- No sudo/root/Docker socket, production DB or secrets, production migrations or server settings without separate scoped approval.
+- Run actual format, lint, strict typecheck, tests, build and real browser/PostgreSQL integration as relevant, and verify exact-sha CI. Label blocked checks truthfully.

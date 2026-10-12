@@ -1,11 +1,31 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { TaskWorkspace, type TaskItem } from "./TaskWorkspace";
 
 function fakeServer() {
   let tasks: TaskItem[] = [];
   let mutationNumber = 0;
+  let remoteNumber = 0;
+  let cursor = 0;
+  let cursorAheadOnce = false;
+  const changes: Array<{
+    cursor: number;
+    entityId: string;
+    operation: "create" | "update" | "delete";
+    payload: TaskItem | { id: string; revision: number; deletedAt: string };
+  }> = [];
+  function record(operation: "create" | "update" | "delete", task: TaskItem) {
+    changes.push({
+      cursor: ++cursor,
+      entityId: task.id,
+      operation,
+      payload:
+        operation === "delete"
+          ? { id: task.id, revision: task.revision, deletedAt: new Date().toISOString() }
+          : { ...task },
+    });
+  }
   vi.stubGlobal("crypto", {
     randomUUID: () => "00000000-0000-4000-8000-" + String(++mutationNumber).padStart(12, "0"),
   });
@@ -15,7 +35,23 @@ function fakeServer() {
     calls.push({ method, path });
     const body = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : {};
     let response: unknown;
-    if (method === "GET") response = { tasks: tasks.slice() };
+    if (method === "GET" && path === "/api/sync/bootstrap") {
+      response = { tasks: tasks.slice(), cursor };
+    }
+    if (method === "GET" && path.startsWith("/api/sync/pull?")) {
+      if (cursorAheadOnce) {
+        cursorAheadOnce = false;
+        return { ok: false, status: 409, json: async () => ({ error: "cursor-ahead" }) };
+      }
+      const after = Number(new URL(path, "http://local.test").searchParams.get("cursor"));
+      const batch = changes.filter((change) => change.cursor > after).slice(0, 100);
+      response = {
+        changes: batch,
+        nextCursor: batch.at(-1)?.cursor ?? after,
+        latestCursor: cursor,
+        hasMore: changes.filter((change) => change.cursor > after).length > batch.length,
+      };
+    }
     if (method === "POST" && path === "/api/tasks") {
       const item: TaskItem = {
         id: "11111111-1111-4111-8111-111111111111",
@@ -32,6 +68,7 @@ function fakeServer() {
         updatedAt: new Date().toISOString(),
       };
       tasks = [...tasks, item];
+      record("create", item);
       response = { task: item };
     }
     if (method === "POST" && path === "/api/sync/push") {
@@ -54,6 +91,7 @@ function fakeServer() {
           revision: current.revision + 1,
         };
         tasks = tasks.map((task) => (task.id === updated.id ? updated : task));
+        record("update", updated);
         response = { results: [{ kind: "ok", task: updated, revision: updated.revision }] };
       }
     }
@@ -69,9 +107,11 @@ function fakeServer() {
               ? null
               : task.completedAt,
       }));
+      if (tasks[0]) record("update", tasks[0]);
       response = { task: tasks[0] };
     }
     if (method === "DELETE") {
+      if (tasks[0]) record("delete", { ...tasks[0], revision: tasks[0].revision + 1 });
       tasks = [];
       response = { deleted: true };
     }
@@ -81,13 +121,20 @@ function fakeServer() {
   return {
     calls,
     fetchMock,
+    simulateCursorAheadOnce() {
+      cursorAheadOnce = true;
+    },
     updateRemoteTask(title: string) {
-      tasks = tasks.map((task) => ({ ...task, title, revision: task.revision + 1 }));
+      tasks = tasks.map((task) => {
+        const updated = { ...task, title, revision: task.revision + 1 };
+        record("update", updated);
+        return updated;
+      });
     },
     addRemoteTask(title: string) {
       const timestamp = new Date().toISOString();
-      tasks.push({
-        id: "22222222-2222-4222-8222-222222222222",
+      const task: TaskItem = {
+        id: "22222222-2222-4222-8222-" + String(++remoteNumber).padStart(12, "0"),
         title,
         description: null,
         status: "inbox",
@@ -99,7 +146,15 @@ function fakeServer() {
         completedAt: null,
         createdAt: timestamp,
         updatedAt: timestamp,
-      });
+      };
+      tasks.push(task);
+      record("create", task);
+    },
+    deleteRemoteTask(title: string) {
+      const task = tasks.find((item) => item.title === title);
+      if (!task) throw new Error("Missing fake remote task");
+      record("delete", { ...task, revision: task.revision + 1 });
+      tasks = tasks.filter((item) => item.id !== task.id);
     },
   };
 }
@@ -202,11 +257,45 @@ describe("task workspace connected UI", () => {
     fireEvent(window, new Event("focus"));
     await screen.findByText("Thay đổi từ thiết bị B");
     expect(
-      server.calls.filter((call) => call.path === "/api/tasks" && call.method === "GET").length,
-    ).toBeGreaterThan(1);
+      server.calls.filter((call) => call.path.startsWith("/api/sync/pull?")).length,
+    ).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Đồng bộ ngay" }));
     await screen.findByText("Thay đổi từ thiết bị B");
   });
+  it("bootstraps owner tasks and applies paginated online changes and tombstones", async () => {
+    const server = fakeServer();
+    server.addRemoteTask("Có từ trước");
+    render(<TaskWorkspace csrfToken="test-only-csrf" page="inbox" />);
+    await screen.findByText("Có từ trước");
+    expect(server.calls.some((call) => call.path === "/api/sync/bootstrap")).toBe(true);
+    expect(server.calls.some((call) => call.path === "/api/tasks" && call.method === "GET")).toBe(
+      false,
+    );
+
+    for (let i = 1; i <= 105; i++) server.addRemoteTask("Việc mới từ máy B " + i);
+    fireEvent(window, new Event("focus"));
+    await screen.findByText("Việc mới từ máy B 105");
+    expect(
+      server.calls.filter((call) => call.path.startsWith("/api/sync/pull?")).length,
+    ).toBeGreaterThanOrEqual(2);
+    server.deleteRemoteTask("Việc mới từ máy B 105");
+    fireEvent.click(screen.getByRole("button", { name: "Đồng bộ ngay" }));
+    await waitFor(() => expect(screen.queryByText("Việc mới từ máy B 105")).toBeNull());
+    expect(screen.getByText("Có từ trước")).toBeTruthy();
+  });
+
+  it("rebuilds a safe snapshot if the server rejects a stale or future cursor", async () => {
+    const server = fakeServer();
+    server.addRemoteTask("Trước khi lệch cursor");
+    render(<TaskWorkspace csrfToken="test-only-csrf" page="inbox" />);
+    await screen.findByText("Trước khi lệch cursor");
+    server.addRemoteTask("Sau khi lệch cursor");
+    server.simulateCursorAheadOnce();
+    fireEvent.click(screen.getByRole("button", { name: "Đồng bộ ngay" }));
+    await screen.findByText("Sau khi lệch cursor");
+    expect(server.calls.filter((call) => call.path === "/api/sync/bootstrap")).toHaveLength(2);
+  });
+
   it("shows filtered search results without exposing placeholder tasks", async () => {
     fakeServer();
     render(<TaskWorkspace csrfToken="test-only-csrf" page="inbox" />);
