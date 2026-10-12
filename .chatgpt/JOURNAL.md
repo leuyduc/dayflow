@@ -156,3 +156,10 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Checked GitHub Actions run 38196775380 for exact SHA `4f75f7a51ef8bc37d772062490d3b13e2c900d71`: `completed/success`.
 - `checks`, `online-sync-postgres-integration`, `g4-browser-postgres-e2e` all succeeded. Confirmed `npm run test:postgres:ci` step success, covering A/B, concurrent cursor/idempotency/tombstone PostgreSQL 17 tests.
 - This supersedes earlier CI pending, only for the exact SHA. Formal G5 gate and client conflict UX are not accepted/done; no production change.
+
+## 2026-10-12 — Operator removed Muse; ChatGPT now implements directly
+- Operator explicitly replaced OpenCode/Muse as DayFlow coder with **direct ChatGPT planning, programming, testing, review and GitHub operations**; required GitHub context re-check and persistent checkpoint after EACH logical step to withstand ChatGPT context/cache loss.
+- Found concurrent progress on G5 during workflow audit: `feat/g5-online-sync` `4f75f7a`, G4 human technical acceptance, G5 CI SUCCESS but Gate pending. Adopted up-to-date facts instead of overwriting the shared STATE with an obsolete G4 checkpoint.
+- Created `docs/CHATGPT_EXECUTION_PROTOCOL.md`, commit `eb7d2fc` on `design/linux-fullstack-v2`, with mandatory before/after read-back and no Muse handoff.
+- Updated top-of-file STATE to mark new sole implementer, retired G1-D and current G5 status (commit `3f4175c`). Legacy journal stays factual history, not active instruction.
+- No application code/Ubuntu/production/main modifications. Next: align active README/AGENTS/START_HERE/V2 workflow pointers, then verify persisted checkpoint again.
