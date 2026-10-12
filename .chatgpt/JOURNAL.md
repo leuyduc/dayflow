@@ -151,3 +151,8 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Final local results: typecheck/lint/build/format PASS, Vitest 28/28 PASS, native PostgreSQL 17 online A/B integration PASS, real Chrome + PostgreSQL G4 E2E regression PASS and UI browser mock PASS.
 - React TaskWorkspace adds online-only refresh on focus/visibility/reconnect/interval and manual `Đồng bộ ngay`; does not use delta cursor UI or persist offline edits. README and `docs/V2_G5_PROGRESS.md` explain limits.
 - Staged Git diff check PASS; commit `4f75f7a51ef8bc37d772062490d3b13e2c900d71` pushed to `feat/g5-online-sync`; working tree clean. GitHub CI run 38196775380 pending result at initial entry. No main merge or Ubuntu/production changes.
+
+## 2026-10-12 — Independent G5 CI three jobs SUCCESS
+- Checked GitHub Actions run 38196775380 for exact SHA `4f75f7a51ef8bc37d772062490d3b13e2c900d71`: `completed/success`.
+- `checks`, `online-sync-postgres-integration`, `g4-browser-postgres-e2e` all succeeded. Confirmed `npm run test:postgres:ci` step success, covering A/B, concurrent cursor/idempotency/tombstone PostgreSQL 17 tests.
+- This supersedes earlier CI pending, only for the exact SHA. Formal G5 gate and client conflict UX are not accepted/done; no production change.
