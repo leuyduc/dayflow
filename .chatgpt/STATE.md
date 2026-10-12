@@ -145,3 +145,9 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Full local checks re-ran: 27/27 Vitest PASS, typecheck/lint/build/format PASS, real browser-to-Postgres test PASS.
 - Added standalone GitHub Actions `g4-browser-postgres-e2e` service job using throwaway postgres:17 with publicly known TEST-ONLY credentials; added G5 sync design-only preparation note. G4 follow-up feature commit `655d15ee851c965eb1b3483fc8c4fed5cc021c0c` pushed to branch, Windows worktree clean. CI run: https://github.com/leuyduc/dayflow/actions/runs/38195148862 (status pending verification at this checkpoint).
 - G4 human acceptance NOT granted. G5 only design preparation, no G5 code; `change_log`, `processed_mutations`, per-owner serial cursor missing in schema. G1-A exposed SSH admin key and G1-C Linux agent isolation unresolved; NO production/Ubuntu changes.
+
+## Independent G4 true-browser/PostgreSQL CI SUCCESS — 2026-10-12
+- **Exact** feature source SHA `655d15ee851c965eb1b3483fc8c4fed5cc021c0c` matched GitHub Actions run `38195148862`: status `completed`, conclusion `success`.
+- All three jobs completed SUCCESS: `checks`, `g3-postgres-integration`, and new `g4-browser-postgres-e2e`; explicitly confirmed the Chrome availability step and `npm run test:browser:g4:postgres` step both SUCCESS.
+- Link: https://github.com/leuyduc/dayflow/actions/runs/38195148862 . This supersedes the earlier “new CI pending” statement for that exact SHA.
+- G4 **developer QA + independent full-browser-to-PostgreSQL CI verified**; human Gate G4 acceptance remains NOT GRANTED. G5 design-only document exists; G5 implementation/authorization not started. G1 production safety blockers remain unremediated.
