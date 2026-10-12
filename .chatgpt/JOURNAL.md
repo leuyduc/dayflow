@@ -202,3 +202,9 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - **Both runs all 3/3 jobs SUCCESS:** `checks` (npm typecheck, lint, 32 Vitest, build, Prettier), `online-sync-postgres-integration` (real `npm run test:postgres:ci`), `g4-browser-postgres-e2e` (actual Chrome and `npm run test:browser:g4:postgres`).
 - Source: https://github.com/leuyduc/dayflow/actions/runs/38199249827 and https://github.com/leuyduc/dayflow/actions/runs/38199246279 .
 - G5 development QA and CI verified; still NOT operator Gate acceptance, no merge/deploy. Next: update existing draft G5 PR #2 description to reflect delta client without understating remaining broad conflict/multi-browser test gaps.
+
+## 2026-10-12 — Refreshed existing draft G5 PR #2 for delta-client bddaea2
+- Verified GitHub source feature SHA `bddaea29843c0a684ba13f9f0191919f78dc623a`, design checkpoint and both successful exact-SHA CI runs 38199249827/38199246279. Confirmed PR #2 still draft/open, unmerged.
+- Updated PR description/title in place at https://github.com/leuyduc/dayflow/pull/2 to include incremental React bootstrap/pull, pagination, 409 recovery, edit conflict choices, 32/32 Vitest and independent three-job CI evidence from two runs.
+- Tracked remaining requirements: real two-browser simultaneous task edit conflict E2E, non-edit conflict UX, cursor retention and robustness. G7 offline queue outside G5; G1 security still blocks production.
+- No merge, production, Ubuntu or code write during PR operation. Next safe development step: isolated two-browser conflict E2E under authorized G5 scope; checkpoint first.
