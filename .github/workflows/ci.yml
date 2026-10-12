@@ -22,7 +22,7 @@ jobs:
       - run: npm run build
       - run: npm run format:check
 
-  g3-postgres-integration:
+  online-sync-postgres-integration:
     runs-on: ubuntu-latest
     services:
       postgres:

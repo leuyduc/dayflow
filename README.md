@@ -116,3 +116,11 @@ npm run test:browser:g4:postgres
 This test starts an isolated PostgreSQL cluster and separate localhost Vite/Fastify servers, then checks actual Chrome login, create, refresh/persist, edit, complete/reopen, delete/tombstone, logout, and direct SQL state with **no mocked network calls**. Services and disposable credentials are cleaned up after the test. GitHub Actions also runs the same workflow with its own ephemeral PostgreSQL 17 container.
 
 See `docs/V2_G4_PROGRESS.md` for evidence and outstanding acceptance/security boundaries.
+
+## G5 online synchronization (development)
+
+Branch `feat/g5-online-sync` adds migration-backed `sync_state`, `change_log` and `processed_mutations`. Authenticated `POST /api/sync/push`, `GET /api/sync/pull?cursor=N` and `GET /api/sync/bootstrap` provide owner-scoped online protocol, commit-safe per-owner cursor and retry idempotency. **Existing G4 online task writes now flow through the same transaction that updates the change log.**
+
+Verify with `npm run test:postgres:local` in the isolated Windows dev sandbox or with the repository's ephemeral PostgreSQL 17 GitHub Actions integration job. A/B sessions, racing edits, duplicate retries, tombstones and per-owner ordering are included in the real PostgreSQL tests.
+
+React's `Đồng bộ ngay` refreshes the latest server task snapshot; it also refreshes when the tab receives focus, connectivity returns and on a limited timer. Incremental push/pull is tested as an API contract and is not yet used directly by the browser UI. G7 offline storage/outbox is **not** implemented. See `docs/V2_G5_PROGRESS.md` for detailed scope and limitations.

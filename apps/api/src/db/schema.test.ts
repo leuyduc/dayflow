@@ -33,8 +33,11 @@ describe("PostgreSQL migration with isolated PGlite engine", () => {
       "select tablename from pg_tables where schemaname='public' order by tablename",
     );
     expect(result.rows.map(({ tablename }) => tablename)).toEqual([
+      "change_log",
+      "processed_mutations",
       "sessions",
       "settings",
+      "sync_state",
       "tasks",
       "users",
     ]);

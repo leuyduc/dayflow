@@ -20,6 +20,7 @@ const app = buildApp({
       ? {
           store: postgres.store,
           tasks: postgres.store,
+          sync: postgres.store,
           csrfSecret,
           allowedOrigin,
           cookieSecure: isProduction,

@@ -51,7 +51,27 @@ function fakeServer() {
     return { ok: true, status: 200, json: async () => response };
   });
   vi.stubGlobal("fetch", fetchMock);
-  return { calls, fetchMock };
+  return {
+    calls,
+    fetchMock,
+    addRemoteTask(title: string) {
+      const timestamp = new Date().toISOString();
+      tasks.push({
+        id: "22222222-2222-4222-8222-222222222222",
+        title,
+        description: null,
+        status: "inbox",
+        priority: "medium",
+        dueDate: null,
+        tags: [],
+        estimatedMinutes: null,
+        revision: 1,
+        completedAt: null,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+    },
+  };
 }
 afterEach(() => {
   cleanup();
@@ -86,6 +106,19 @@ describe("task workspace connected UI", () => {
     expect(calls.some((call) => call.method === "DELETE")).toBe(true);
   });
 
+  it("refreshes online task changes from another device on focus and manual sync", async () => {
+    const server = fakeServer();
+    render(<TaskWorkspace csrfToken="test-only-csrf" page="inbox" />);
+    await screen.findByText("Chưa có công việc phù hợp");
+    server.addRemoteTask("Thay đổi từ thiết bị B");
+    fireEvent(window, new Event("focus"));
+    await screen.findByText("Thay đổi từ thiết bị B");
+    expect(
+      server.calls.filter((call) => call.path === "/api/tasks" && call.method === "GET").length,
+    ).toBeGreaterThan(1);
+    fireEvent.click(screen.getByRole("button", { name: "Đồng bộ ngay" }));
+    await screen.findByText("Thay đổi từ thiết bị B");
+  });
   it("shows filtered search results without exposing placeholder tasks", async () => {
     fakeServer();
     render(<TaskWorkspace csrfToken="test-only-csrf" page="inbox" />);

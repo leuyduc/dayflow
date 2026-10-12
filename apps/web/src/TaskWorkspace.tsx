@@ -66,6 +66,39 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
     };
   }, []);
 
+  // G5 online-only convergence: refresh server-authoritative state on focus,
+  // reconnect and a light interval. This does NOT claim a durable offline outbox.
+  useEffect(() => {
+    let active = true;
+    async function syncVisible() {
+      if (!active || document.visibilityState === "hidden" || !navigator.onLine) return;
+      try {
+        const response = await fetch("/api/tasks", {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        const result = await responseJson<{ tasks: TaskItem[] }>(response);
+        if (active) setTasks(result.tasks);
+      } catch {
+        // Keep last visible data; a failed refresh must not destroy local UI state.
+      }
+    }
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void syncVisible();
+    };
+    window.addEventListener("focus", syncVisible);
+    window.addEventListener("online", syncVisible);
+    document.addEventListener("visibilitychange", onVisible);
+    const interval = window.setInterval(() => void syncVisible(), 30_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", syncVisible);
+      window.removeEventListener("online", syncVisible);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
   async function mutate(method: "POST" | "PATCH" | "DELETE", endpoint: string, payload: object) {
     if (busy) return;
     setBusy(true);
@@ -187,6 +220,20 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
             <option value="completed">Đã hoàn thành</option>
           </select>
         </label>
+        <button
+          type="button"
+          className="task-action"
+          disabled={busy || loading}
+          onClick={() =>
+            void reload()
+              .then(() => setError(""))
+              .catch(() =>
+                setError("Không thể tải thay đổi từ thiết bị khác. Thử lại khi có mạng."),
+              )
+          }
+        >
+          Đồng bộ ngay
+        </button>
       </div>
       {error && (
         <p role="alert" className="task-error">
