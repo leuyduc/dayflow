@@ -228,6 +228,81 @@ try {
   );
   console.log("G4_E2E_BROWSER_DELETE_TOMBSTONE_POSTGRES=PASS");
 
+  // G5: two independent authenticated browsers race on one live PostgreSQL task.
+  const raceTitle = "G5 two-browser conflict target";
+  await page.getByLabel("Ghi nhanh công việc").fill(raceTitle);
+  await page.getByRole("button", { name: "Thêm việc" }).click();
+  await page.getByText(raceTitle).waitFor();
+
+  const otherContext = await browser.newContext({ viewport: { width: 1024, height: 768 } });
+  const otherPage = await otherContext.newPage();
+  otherPage.on("pageerror", (e) => pageErrors.push("Second browser: " + e.message));
+  await otherPage.goto(appOrigin, { waitUntil: "domcontentloaded", timeout: 15_000 });
+  await otherPage.getByRole("form", { name: "Đăng nhập DayFlow" }).waitFor();
+  await otherPage.getByLabel("Email").fill(ownerEmail);
+  await otherPage.getByLabel("Mật khẩu").fill(ownerPass);
+  await otherPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await otherPage.getByLabel("Ghi nhanh công việc").waitFor();
+  await otherPage
+    .getByRole("navigation", { name: "Các màn hình" })
+    .getByRole("button", { name: "Công việc" })
+    .click();
+  await otherPage.getByText(raceTitle).waitFor();
+
+  // Browser A retains revision 1 in the open edit form; browser B commits revision 2.
+  await page.getByRole("button", { name: "Sửa" }).click();
+  await page.getByLabel("Tiêu đề").fill("Draft on browser A");
+  await otherPage.getByRole("button", { name: "Sửa" }).click();
+  await otherPage.getByLabel("Tiêu đề").fill("Browser B saved version");
+  await otherPage.getByRole("button", { name: "Lưu thay đổi" }).click();
+  await otherPage.getByText("Browser B saved version").waitFor();
+  await page.getByRole("button", { name: "Lưu thay đổi" }).click();
+  await page.getByText("Xung đột chỉnh sửa — cần lựa chọn").waitFor();
+  assert(
+    (await page.getByLabel("Tiêu đề").inputValue()) === "Draft on browser A",
+    "Browser A conflict silently discarded its local draft",
+  );
+  await page.getByRole("button", { name: "Giữ bản trên máy chủ" }).click();
+  await page.getByText("Browser B saved version").waitFor();
+  let raceRows = await sql.query(
+    "SELECT title,revision FROM tasks WHERE user_id=$1 AND deleted_at IS NULL",
+    [ownerId],
+  );
+  assert(
+    raceRows.rowCount === 1 &&
+      raceRows.rows[0].title === "Browser B saved version" &&
+      raceRows.rows[0].revision === 2,
+    "Choosing the server version must not write browser A stale draft",
+  );
+
+  // A second race tests the other explicit choice: reapply A against the CURRENT revision.
+  await page.getByRole("button", { name: "Sửa" }).click();
+  await page.getByLabel("Tiêu đề").fill("Browser A approved overwrite");
+  await otherPage.getByRole("button", { name: "Sửa" }).click();
+  await otherPage.getByLabel("Tiêu đề").fill("Browser B second saved version");
+  await otherPage.getByRole("button", { name: "Lưu thay đổi" }).click();
+  await otherPage.getByText("Browser B second saved version").waitFor();
+  await page.getByRole("button", { name: "Lưu thay đổi" }).click();
+  await page.getByText("Xung đột chỉnh sửa — cần lựa chọn").waitFor();
+  assert(
+    (await page.getByLabel("Tiêu đề").inputValue()) === "Browser A approved overwrite",
+    "Browser A second draft vanished before explicit confirmation",
+  );
+  await page.getByRole("button", { name: "Ghi đè bằng bản của tôi" }).click();
+  await page.getByText("Browser A approved overwrite").waitFor();
+  raceRows = await sql.query(
+    "SELECT title,revision FROM tasks WHERE user_id=$1 AND deleted_at IS NULL",
+    [ownerId],
+  );
+  assert(
+    raceRows.rowCount === 1 &&
+      raceRows.rows[0].title === "Browser A approved overwrite" &&
+      raceRows.rows[0].revision === 4,
+    "Confirmed overwrite did not preserve one atomic revision per accepted write",
+  );
+  await otherContext.close();
+  console.log("G5_TWO_REAL_BROWSERS_EDIT_CONFLICT_AND_EXPLICIT_RESOLUTION=PASS");
+
   await page.setViewportSize({ width: 390, height: 844 });
   assert(
     !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)),
