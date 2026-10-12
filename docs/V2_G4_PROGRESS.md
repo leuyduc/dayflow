@@ -39,3 +39,15 @@ For browser UI checks with `dev:web` already running on localhost and Chrome ins
 - Complete/reopen smoke must use the unfiltered Tasks page: Today hides completed tasks by design. Browser test was corrected accordingly rather than weakening the page filter.
 - Enforce owner scope and revision atomically at the SQL update/delete statement, not with only an earlier read.
 - Test UI behavior and PostgreSQL persistence separately, label mocked vs real evidence, and verify CI with exact final commit SHA.
+
+## Real browser-to-PostgreSQL G4 verification — follow-up, 2026-10-12
+
+The previous **mock-API browser** and **real-PostgreSQL HTTP API** checks now have a third independent test: `scripts/browser-g4-postgres-e2e.mjs`.
+
+- Uses the native PostgreSQL 17 binary already installed under the gitignored Windows sandbox; no server-global service or Ubuntu access. Generates throwaway DB/user/owner credentials. Starts Fastify and a dedicated Vite development server on loopback, with actual Vite `/api` reverse proxy.
+- Real headless Chrome, with **no request mocking/interception**, logs in against the real PostgreSQL-backed Fastify session. It creates a task and verifies the row via SQL, reloads the browser and verifies persisted task/session, edits title/description/dueDate/priority, toggles completed/reopened with SQL verification, deletes and verifies the revisioned tombstone, checks mobile overflow/JS runtime and logs out. Test starts and stops services itself.
+- The test supports an external **loopback-only, dedicated `dayflow_test_` database** on an isolated GitHub Actions PostgreSQL 17 service. The new `g4-browser-postgres-e2e` job runs this real end-to-end browser/API/PostgreSQL path independently of the existing G3/G4 test jobs.
+- Prerequisites for local Windows run: `npm ci --ignore-scripts`, `npm run build -w @dayflow/api`, install test-only native PostgreSQL wrapper into `.artifacts/postgres-sandbox/` (see G3 evidence), Chrome already installed. Run `npm run test:browser:g4:postgres`. It uses dedicated port `5174` (web) and `55433` (PostgreSQL) in Windows local mode and will fail rather than take over occupied ports.
+- **This does not provision a persistent personal DayFlow account**. Test data are disposable. The backend remains guarded against production access. The user must explicitly accept G4 before its Gate is marked PASS and G1 security remains separate.
+- First browser smoke attempt timed out at Playwright `networkidle` with Vite; switching to `domcontentloaded` and waiting for actual UI elements fixed the test. Test correctness is based on DOM/SQL outcomes, not network silence.
+- CI status is recorded in ChatGPT journal by exact commit SHA, not assumed from the presence of a workflow definition.

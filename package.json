@@ -25,7 +25,8 @@
     "db:bootstrap:dev": "npm run db:bootstrap:dev -w @dayflow/api",
     "test:postgres:local": "node scripts/test-g3-postgres.mjs",
     "test:postgres:ci": "node scripts/test-g3-postgres.mjs",
-    "test:browser:g4": "node scripts/browser-g4-smoke.mjs"
+    "test:browser:g4": "node scripts/browser-g4-smoke.mjs",
+    "test:browser:g4:postgres": "node scripts/browser-g4-postgres-e2e.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

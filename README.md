@@ -103,3 +103,16 @@ For reproducible verification on Windows development:
 Mutations require an authenticated cookie and `X-Dayflow-CSRF` header; the browser receives the CSRF token only in the in-memory login/session response. JSON `PATCH` and `DELETE` require `expectedRevision`; stale edits return HTTP 409. Cross-owner access is denied, and deletes create tombstones. UI runs against real PostgreSQL only after a separate development database and owner account have been explicitly configured.
 
 See `docs/V2_G4_PROGRESS.md` for evidence and limitations. G4 does not implement scheduling, offline queues or device sync, and must not be deployed to Ubuntu production before G1 isolation and a reviewed release.
+
+## G4 real browser + real PostgreSQL integration
+
+For development-only E2E testing (not using any production database), ensure Node dependencies and the G3 test-only PostgreSQL wrapper are present in the ignored `.artifacts/postgres-sandbox/` directory (setup in `docs/V2_G3_LIVE_POSTGRES_EVIDENCE.md`). With a previously installed local Chrome:
+
+```bash
+npm run build -w @dayflow/api
+npm run test:browser:g4:postgres
+```
+
+This test starts an isolated PostgreSQL cluster and separate localhost Vite/Fastify servers, then checks actual Chrome login, create, refresh/persist, edit, complete/reopen, delete/tombstone, logout, and direct SQL state with **no mocked network calls**. Services and disposable credentials are cleaned up after the test. GitHub Actions also runs the same workflow with its own ephemeral PostgreSQL 17 container.
+
+See `docs/V2_G4_PROGRESS.md` for evidence and outstanding acceptance/security boundaries.
