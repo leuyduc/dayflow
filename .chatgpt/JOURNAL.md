@@ -222,3 +222,8 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - CI links: https://github.com/leuyduc/dayflow/actions/runs/38199682438 and https://github.com/leuyduc/dayflow/actions/runs/38199686885 .
 - Developer QA + independent CI now cover actual two-browser conflicting online edits with explicit keep-server/reapply choices and PostgreSQL revision assertions. Gate G5 remains NOT human accepted; non-edit conflict UX/retention/load and G1 security remain for later review. No production/main/Ubuntu changes.
 - Next: update Draft PR #2 description to current SHA/evidence, checkpoint and read back.
+
+## 2026-10-12 — Draft G5 PR #2 updated to two-real-browser verified source
+- PR https://github.com/leuyduc/dayflow/pull/2 reviewed and updated in place to current head `2cae8015f69718bbaa857c9b0affff18f4c45d7c`. Body now links CI push and PR runs `38199682438` / `38199686885`, both 3/3 success, and documents verified real two-Chrome same-task conflict choices with SQL revision 2 and 4.
+- PR remains DRAFT, OPEN and UNMERGED into technically accepted G4 base. G5 formal human acceptance NOT granted. No new code, release or Ubuntu/production change in this PR housekeeping step.
+- Future G5 in approved non-production scope: extend explicit UX for status/delete revision races, verify further cursor retention and concurrent feed boundaries, before requesting formal Gate acceptance. Follow per-step GitHub checkpoint/re-read protocol.
