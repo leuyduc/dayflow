@@ -1,6 +1,8 @@
+> **WORKFLOW OVERRIDE 2026-10-12:** Direct ChatGPT implementation replaces OpenCode/Muse coding. The user requires a GitHub checkpoint update and re-read **after every logical step** (see `docs/CHATGPT_EXECUTION_PROTOCOL.md`). Historical agent references below are no longer executable instructions. G1 production security remains blocked.
+
 # DayFlow V2 — Gate-by-Gate Execution and Acceptance
 
-Status: specification only. No code/installation/deployment until G0 accepted.
+Status: V2 gated plan. G2–G5 development was separately authorized off-production. ChatGPT now codes directly. Production Linux G1 restrictions remain.
 Never mark gates PASS without actual commands/logs/screenshots. No self-merging to main.
 
 ## Branching and change controls
@@ -16,8 +18,8 @@ Deliver: versioned OS/resource/port/workload inventory, existing access, exact O
 PASS: audited facts, secrets redacted, operator accepts the plan.
 
 G1 — Hardening and workspace separation
-Implement restricted developer, SSH-key access/tunnel, safe OpenCode, distinct dev/prod boundaries, staging/test DB approach, repo checkout and least-privilege GitHub access. Host configuration changes must be individually approved and must avoid service disruption.
-PASS: negative tests demonstrate developer cannot access prod files/secrets/db/deploy; OpenCode port not public; SSH recovery verified.
+Implement restricted developer access, safe SSH credentials and isolation (NO OpenCode), distinct dev/prod boundaries, staging/test DB approach, repo checkout and least-privilege GitHub access. Host configuration changes must be individually approved and must avoid service disruption.
+PASS: negative tests demonstrate developer cannot access prod files/secrets/db/deploy; SSH recovery verified and production access not exposed.
 
 G2 — Full-stack foundation
 Monorepo apps/web, apps/api, packages/domain, contracts, infra and tests. Versioned config, lint/format/type/test/build, DB migration tooling, API health endpoint and basic shell. Separate dev/test Compose only after security checks.
@@ -52,14 +54,14 @@ Security checklist, full E2E, accessibility, responsive screenshots, monitoring/
 PASS: documented evidence links, reviewed production release, health checks and backup/restore readiness; no critical known defects.
 
 ## Engineering and reporting rules for every gate
-- Before modifications: git branch/status, inspect existing code, reproduce baseline.
+- Before EACH logical step: re-fetch latest GitHub STATE and source branch HEAD; inspect scope, current code and test baseline.
 - Implement one coherent slice; use feature branch and meaningful commits.
 - Run actual format check, lint, typecheck, tests, production build; use isolated test DB and Playwright when applicable.
-- Include exact commands, logs PASS/FAIL/BLOCKED, screenshots where relevant, commit SHA, files changed, remaining risks.
-- Gate is COMPLETE only after operator acceptance; Muse must stop at gate boundary.
+- Include exact test logs PASS/FAIL/BLOCKED, final SHA and risks; after EACH logical step persist STATE/JOURNAL and re-fetch/read committed checkpoint + code HEAD.
+- Gate is COMPLETE only after operator acceptance; ChatGPT stops at the human acceptance boundary.
 - Never run production commands, modify firewall/SSH settings, generate live credentials, migrate production schema, force-push, merge to main or expose ports without explicit scoped approval.
 
 ## Current handoff (2026-10-12)
 G0 has been audited. G1-B restricted-account SSH access partially passed, but overall G1 is NOT accepted: the exposed old root key is still authorized (G1-A deferred), and G1-C production isolation remains unverified. Next approved work is only the explicitly scoped G1-C isolation plan/checks, not OpenCode installation, autonomous Muse operation or application coding.
 
-**Context discipline:** `.chatgpt/` is an operator-only recovery record for ChatGPT. Muse/OpenCode manages its own context and cache. Do not add repeated full-document reads or replay of ChatGPT's journal to Muse after every step. This does not relax normal project inspection or verification when actually needed.
+**Context discipline:** `.chatgpt/` is an operator-only recovery record for ChatGPT. ChatGPT is the sole implementer; re-fetch/commit/re-read the checkpoint after EVERY logical step. This does not relax normal project inspection or verification when actually needed.
