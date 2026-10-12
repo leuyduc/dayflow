@@ -102,3 +102,15 @@ Lesson: Inspect targeted diffs after edits to security config, fail fast with ty
 ## 2026-10-12 — Distinguish React browser mocks from end-to-end real DB verification
 Observed: Chrome verified frontend login and task interactions with intercepted mocked API responses, while separate real Fastify HTTP tests exercised PostgreSQL 17 persistence and authorization. Neither single test alone proves every browser-to-database integration path.
 Lesson: Report both testing boundaries explicitly; an operator preview requires its own isolated configured database and approved local account. G4 technical success does not mean production readiness or resolve G1 risks.
+
+## 2026-10-12 — Build a full browser-to-PostgreSQL test, not two isolated halves
+Observed: G4 already had a mocked browser UI test and a separate real HTTP/PostgreSQL API test, but neither covered a browser's actual cookie, Vite proxy, persistence over reload and SQL state in one session. A new isolated local test verified all layers without request mocks.
+Lesson: Before accepting a functional milestone, test the full user path end-to-end with disposable credentials and an isolated DB, and query SQL to confirm writes/tombstones. Keep a separate independent CI path with a throwaway database and never confuse it with a permanently configured personal account.
+
+## 2026-10-12 — Vite development can prevent Playwright networkidle
+Observed: A real Chrome navigation stalled until Playwright's 30-second network-idle timeout when using a live Vite development server; initial test failed even though cleanup worked. `domcontentloaded` followed by explicit UI assertions made the test reliably pass.
+Lesson: For development servers with HMR/websocket/network activity, wait for semantic DOM and API-driven state, not total network inactivity. Record an initial failure/fix and re-run the whole target scenario.
+
+## 2026-10-12 — G5 cannot be inferred from G4 revision columns
+Observed: G4 has owner-scoped `revision` and tombstones, but the schema has no transactional change log, processed mutation IDs or commit-safe per-owner cursor.
+Lesson: Never claim multi-device synchronization on the strength of ordinary CRUD. Before G5, plan a serialized-per-owner transactional writer, idempotency ledger and ordered change feed with tests for two clients, retries and out-of-order transactions; G7 offline queue remains separate.
