@@ -1,3 +1,5 @@
+> **WORKFLOW OVERRIDE 2026-10-12:** Direct ChatGPT implementation replaces OpenCode/Muse coding. The user requires a GitHub checkpoint update and re-read **after every logical step** (see `docs/CHATGPT_EXECUTION_PROTOCOL.md`). Historical agent references below are no longer executable instructions. G1 production security remains blocked.
+
 # DayFlow V2 — Linux Operations, Security and Deploy Plan
 
 ## G0 first: read-only Linux audit, no changes
@@ -10,7 +12,7 @@ Collect distro/kernel, vCPU/RAM/free disk, existing workloads, ports, DNS/domain
 - If strong isolation cannot be achieved on one VPS, recommend a separate VM/host or stop automatic command execution. Rootless development containers may be used when audited; do not weaken isolation merely for convenience.
 - Limit agent tools via OpenCode permissions; destructive shell, privileged commands, network publishing and infra mutations require explicit approval.
 
-## Remote OpenCode access from Windows
+## RETIRED HISTORICAL REFERENCE — Remote OpenCode access (DO NOT EXECUTE)
 OpenCode runs on Linux, bound ONLY to 127.0.0.1. The Windows operator connects using an SSH tunnel (illustrative, after G0):
   ssh -N -L 14096:127.0.0.1:4096 dev@YOUR_SERVER
 Then visit http://127.0.0.1:14096 if OpenCode web runs on Linux localhost port 4096.
