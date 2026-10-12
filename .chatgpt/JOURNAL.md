@@ -130,3 +130,8 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Queried GitHub Actions run 38195148862 and compared `head_sha` to `655d15ee851c965eb1b3483fc8c4fed5cc021c0c`.
 - Confirmed all 3 jobs successful: `checks`, `g3-postgres-integration`, and `g4-browser-postgres-e2e`; G4 job's `Check preinstalled Chrome` and `Run npm run test:browser:g4:postgres` steps each succeeded.
 - G4's full Chrome/Vite/Fastify/PostgreSQL 17 flow now has BOTH isolated Windows test PASS and independent Linux CI PASS. Source branch untouched after the verified SHA; no human G4 signoff and no production deployment.
+
+## 2026-10-12 — G4 checkout tracking repaired
+- Final local/remote check revealed `git clone --single-branch` from earlier G2 had left `remote.origin.fetch` pinned to `feat/fullstack-foundation`; `origin/feat/g4-task-crud` was missing locally despite the remote branch existing and matching published SHA.
+- Changed only this checkout's Git fetch refspec to the standard wildcard, fetched, configured G4 upstream, and independently verified clean local/remote SHA equality at `655d15ee851c965eb1b3483fc8c4fed5cc021c0c`.
+- No remote force push, source code edit or Ubuntu action.
