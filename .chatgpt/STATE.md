@@ -1,12 +1,12 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
-## G5 two-real-browser competing edits — WINDOWS QA PASS / INDEPENDENT CI PENDING (2026-10-12)
+## G5 two-real-browser competing edits — WINDOWS + INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
 
 - ChatGPT directly implemented tests inside approved Windows G5 development scope. G5 human Gate acceptance remains PENDING; Linux G1 security NOT PASSED.
 - Latest source: `feat/g5-online-sync` commit **`2cae8015f69718bbaa857c9b0affff18f4c45d7c`**; pushed and Windows checkout clean/synced to remote. Base G5 delta client `bddaea2` and prior CI successes retained. Draft PR #2 remains open/unmerged.
 - Real Chrome/Fastify/PostgreSQL E2E now opens **two independent browser contexts**, authenticates same owner on both, tests two races on one task. In first, B commits revision 2 before A; A receives explicit conflict and keeps local draft; choosing keep-server causes NO extra write, verified SQL revision=2. In second, B commits revision 3 before A; A explicitly chooses reapply/overwrite, creates a new accepted revision 4; verified final SQL title/revision.
 - Windows validation PASS: real Chrome→Fastify→PostgreSQL multi-browser scenario and all previous CRUD/session/mobile E2E; **32/32 Vitest**, TypeScript, ESLint, build, Prettier, and staged diff whitespace check. README and G5 progress report updated. No Ubuntu/production/main changes.
-- **Exact final-SHA GitHub Actions CI is PENDING independent verification**. Next step: verify CI jobs for `2cae8015f69718bbaa857c9b0affff18f4c45d7c`, update STATE/JOURNAL, read back. Do not promote G5 Gate automatically.
+- **Exact final-SHA CI VERIFIED SUCCESS:** source `2cae8015f69718bbaa857c9b0affff18f4c45d7c` GitHub Actions push run `38199682438` and PR run `38199686885` both completed SUCCESS, all 3/3 jobs each: `checks` (typecheck/lint/32 Vitest/build/format), `g4-browser-postgres-e2e` (real two-Chrome `/api/sync/push` conflict E2E test), `online-sync-postgres-integration` (PostgreSQL A/B/cursor/idempotency). https://github.com/leuyduc/dayflow/actions/runs/38199686885 . Next: update existing Draft PR #2 to reflect two-real-browser E2E and exact-SHA evidence, then checkpoint/re-read. No Gate promotion without user approval.
 - Remaining G5 scope: non-edit conflict UI, cursor retention/load/security hardening; G7 offline queue explicitly not implemented. Old root SSH key and isolation blockers unresolved.
 
 ## G5 React incremental pull/bootstrap — LOCAL + INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
@@ -58,7 +58,7 @@ ChatGPT directly implements DayFlow React web, Fastify API, PostgreSQL-backed ta
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
 | G4 — Task UI/API | TECHNICALLY ACCEPTED BY USER / G1 SECURITY STILL BLOCKS PRODUCTION | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
-| G5 — Two-device online sync | DELTA CLIENT + CI PASS / GATE NOT ACCEPTED | `feat/g5-online-sync` `bddaea2`; bootstrap/pull, tombstones, 409 fallback, 32 Vitest PASS, Chrome/PostgreSQL E2E PASS, CI 38199249827 and 38199246279 all jobs SUCCESS; offline queue G7 |
+| G5 — Two-device online sync | TWO-CHROME CONFLICT E2E + CI PASS / GATE NOT ACCEPTED | `feat/g5-online-sync` `2cae801`; bootstrap/pull, conflict UI, real two-Chrome PostgreSQL race, 32 Vitest PASS, CI 38199682438 and 38199686885 all jobs SUCCESS; G7 offline not included |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
 | G8 — Import/export + DB backups | NOT STARTED | |
