@@ -18,7 +18,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
 | G4 — Task UI/API | TECHNICALLY ACCEPTED BY USER / G1 SECURITY STILL BLOCKS PRODUCTION | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
-| G5 — Two-device online sync | SERVER/API IMPLEMENTED + LOCAL POSTGRES QA PASS / CI PENDING / GATE NOT ACCEPTED | `feat/g5-online-sync` `4f75f7a`; 28 Vitest, A/B concurrency/idempotency/tombstone tests. UI online refresh via full snapshots; delta UI & offline queue NOT completed |
+| G5 — Two-device online sync | SERVER/API + LOCAL/INDEPENDENT CI PASS / GATE NOT ACCEPTED | `feat/g5-online-sync` `4f75f7a`; 28 Vitest, A/B concurrency/idempotency/tombstone tests. UI online refresh via full snapshots; delta UI & offline queue NOT completed |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
 | G8 — Import/export + DB backups | NOT STARTED | |
@@ -172,3 +172,9 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Windows checks: Vitest **28/28 PASS**, TypeScript/lint/build/format PASS, G4 real Chrome→Fastify→PostgreSQL test PASS, G4 Chrome mock test PASS. Real PostgreSQL 17 G5 A/B sessions, bootstrap, retry idempotency, payload fingerprint, concurrent revision conflicts and cursor ordering, tombstones, foreign owner denial, bad CSRF/input PASS; isolated test Postgres stopped cleanly.
 - Code pushed `feat/g5-online-sync` at commit `4f75f7a51ef8bc37d772062490d3b13e2c900d71`; GitHub Actions run https://github.com/leuyduc/dayflow/actions/runs/38196775380 was in progress at this intermediate checkpoint. Source evidence `docs/V2_G5_PROGRESS.md`.
 - Found existing DRAFT G4 PR #1 into G3 already documented in repo checkpoint; not merged, edited or superseded. No Ubuntu commands, deployment, production DB or credentials touched. Muse context/cache is managed independently.
+
+## 2026-10-12 — Independent G5 Postgres 17 CI confirmed
+- Exact feature SHA `4f75f7a51ef8bc37d772062490d3b13e2c900d71` matched GitHub Actions run `38196775380`, status `completed`, conclusion `success`.
+- Three jobs SUCCESS: `checks`, `online-sync-postgres-integration`, and `g4-browser-postgres-e2e`. Verified specifically `npm run build -w @dayflow/api` and `npm run test:postgres:ci` in the sync job were SUCCESS.
+- Link: https://github.com/leuyduc/dayflow/actions/runs/38196775380 .
+- **Technical development verification passed; user G5 acceptance remains pending.** React uses snapshot refresh and does not yet consume sync delta/push directly; full conflict UI and offline G7 queue are not present. G1 production security blockers still apply; no Ubuntu changes.
