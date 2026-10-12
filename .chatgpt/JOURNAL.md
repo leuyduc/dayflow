@@ -215,3 +215,10 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Browser E2E logs `G5_TWO_REAL_BROWSERS_EDIT_CONFLICT_AND_EXPLICIT_RESOLUTION=PASS` plus all previous G4 CRUD/session/mobile/error and clean test PostgreSQL shutdown PASS. Typecheck, ESLint, **32/32 Vitest**, build, Prettier, staged whitespace check PASS.
 - README and G5 progress updated for new verified evidence and narrowed remaining Gate G5 scope to non-edit conflicts/retention/load hardening. Committed/pushed code `2cae8015f69718bbaa857c9b0affff18f4c45d7c` on `feat/g5-online-sync`, Windows worktree clean and remote SHA matched.
 - GitHub Actions for exact final SHA have NOT been independently verified at initial checkpoint; next step check CI and only then record PASS. G5 Gate human acceptance still pending, G1 security blocked; no main merge/production actions.
+
+## 2026-10-12 — Two-real-Chrome G5 conflict E2E independently verified
+- Matched exact G5 source SHA `2cae8015f69718bbaa857c9b0affff18f4c45d7c` to GitHub Actions push run `38199682438` and PR run `38199686885`; both `completed/success`.
+- In BOTH runs: all 3 jobs individually SUCCESS: `checks` (typecheck, lint, Vitest, build, format), `g4-browser-postgres-e2e` (Chrome installed and `npm run test:browser:g4:postgres` including two authenticated browser contexts), `online-sync-postgres-integration` (`npm run test:postgres:ci`).
+- CI links: https://github.com/leuyduc/dayflow/actions/runs/38199682438 and https://github.com/leuyduc/dayflow/actions/runs/38199686885 .
+- Developer QA + independent CI now cover actual two-browser conflicting online edits with explicit keep-server/reapply choices and PostgreSQL revision assertions. Gate G5 remains NOT human accepted; non-edit conflict UX/retention/load and G1 security remain for later review. No production/main/Ubuntu changes.
+- Next: update Draft PR #2 description to current SHA/evidence, checkpoint and read back.
