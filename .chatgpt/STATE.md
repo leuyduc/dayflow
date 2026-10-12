@@ -1,12 +1,13 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
-## IN_PROGRESS — G5 two-real-browser competing edits E2E (2026-10-12)
+## G5 two-real-browser competing edits — WINDOWS QA PASS / INDEPENDENT CI PENDING (2026-10-12)
 
-- Protocol: ChatGPT direct coding, persistent checkpoint BEFORE/AFTER every logical step. Scope: approved isolated Windows-only G5 development, G5 Gate pending, Ubuntu/production/G1 blocked.
-- Baseline G5 feature HEAD `bddaea29843c0a684ba13f9f0191919f78dc623a`, independently verified 32/32 tests and GitHub CI runs 38199249827 + 38199246279 SUCCESS; Draft PR #2 open and unmerged.
-- Goal: extend real Chrome→Fastify→PostgreSQL E2E with TWO independent authenticated browser contexts concurrently editing same task, test conflict UI keep-server and explicit reapply-with-new-revision, and verify final SQL data/revision. Do NOT invent success.
-- NEXT: verify Windows local branch is clean and matches live GitHub HEAD, implement surgical E2E test only, run local tests, commit/push and independently inspect final CI, checkpoint/read-back.
-- Safety: no production/Ubuntu/SSH/privileged operations, no merge, no G6/G7 scope. Preserve other sessions' work and recheck HEAD before push.
+- ChatGPT directly implemented tests inside approved Windows G5 development scope. G5 human Gate acceptance remains PENDING; Linux G1 security NOT PASSED.
+- Latest source: `feat/g5-online-sync` commit **`2cae8015f69718bbaa857c9b0affff18f4c45d7c`**; pushed and Windows checkout clean/synced to remote. Base G5 delta client `bddaea2` and prior CI successes retained. Draft PR #2 remains open/unmerged.
+- Real Chrome/Fastify/PostgreSQL E2E now opens **two independent browser contexts**, authenticates same owner on both, tests two races on one task. In first, B commits revision 2 before A; A receives explicit conflict and keeps local draft; choosing keep-server causes NO extra write, verified SQL revision=2. In second, B commits revision 3 before A; A explicitly chooses reapply/overwrite, creates a new accepted revision 4; verified final SQL title/revision.
+- Windows validation PASS: real Chrome→Fastify→PostgreSQL multi-browser scenario and all previous CRUD/session/mobile E2E; **32/32 Vitest**, TypeScript, ESLint, build, Prettier, and staged diff whitespace check. README and G5 progress report updated. No Ubuntu/production/main changes.
+- **Exact final-SHA GitHub Actions CI is PENDING independent verification**. Next step: verify CI jobs for `2cae8015f69718bbaa857c9b0affff18f4c45d7c`, update STATE/JOURNAL, read back. Do not promote G5 Gate automatically.
+- Remaining G5 scope: non-edit conflict UI, cursor retention/load/security hardening; G7 offline queue explicitly not implemented. Old root SSH key and isolation blockers unresolved.
 
 ## G5 React incremental pull/bootstrap — LOCAL + INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
 
