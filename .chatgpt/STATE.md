@@ -17,8 +17,8 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
-| G4 — Task UI/API | FULL CHROME→POSTGRES CI PASS / GATE NOT ACCEPTED | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
-| G5 — Two-device online sync | NOT STARTED | |
+| G4 — Task UI/API | TECHNICALLY ACCEPTED BY USER / G1 SECURITY STILL BLOCKS PRODUCTION | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
+| G5 — Two-device online sync | SERVER/API IMPLEMENTED + LOCAL POSTGRES QA PASS / CI PENDING / GATE NOT ACCEPTED | `feat/g5-online-sync` `4f75f7a`; 28 Vitest, A/B concurrency/idempotency/tombstone tests. UI online refresh via full snapshots; delta UI & offline queue NOT completed |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
 | G8 — Import/export + DB backups | NOT STARTED | |
@@ -162,3 +162,13 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Independently reconfirmed exact G4 HEAD `655d15ee851c965eb1b3483fc8c4fed5cc021c0c` and GitHub Actions run https://github.com/leuyduc/dayflow/actions/runs/38195148862: all 3/3 jobs (`checks`, `g3-postgres-integration`, `g4-browser-postgres-e2e`) SUCCESS, with real Chrome→Fastify→PostgreSQL test step SUCCESS.
 - Created draft PR https://github.com/leuyduc/dayflow/pull/1 from `feat/g4-task-crud` into `feat/g3-auth-db` with QA evidence and explicit gates. **No merge, no production/Ubuntu changes, no G4 sign-off and no G5 coding approval.**
 - NEXT DEV ACTION: operator reviews and formally accepts G4; G5 implementation requires separate scoped authorization. G1-A root key and G1-C isolation still block production/autonomous Linux Muse. Keep `main` untouched.
+
+## 2026-10-12 — Operator accepts G4; G5 online sync development checkpoint
+- Operator expressly APPROVED G4 technical acceptance using commit `655d15e` and GitHub Actions run `38195148862`, and authorized *only Windows development* G5 implementation. Production gates G1-A compromised old root key and G1-C insufficient Muse isolation remain BLOCKED.
+- Re-read ChatGPT STATE/JOURNAL/LESSONS, source G5 prep, V2_SYNC_PROTOCOL and master; confirmed Windows `feat/g4-task-crud` clean at `655d15e`, exact CI SUCCESS; branched `feat/g5-online-sync` without changing main/Ubuntu.
+- Added Drizzle migration `0001_even_wonder_man.sql` for `sync_state`, `change_log`, `processed_mutations`. Common transaction now serializes *all* G4 and G5 task writes per owner with SELECT FOR UPDATE row lock, compares expectedRevision, atomically updates task + owner cursor + change_log + accepted-mutation ledger. Retries with identical UUID/body return stored result; different body/key reused is rejected.
+- Added authenticated, owner-scoped `POST /api/sync/push` (batch up to 25, structured outcomes), `GET /api/sync/pull` (pagination/tombstones/cursor), `GET /api/sync/bootstrap` (consistent snapshot). Invalid Origin/CSRF and client-provided owner IDs are rejected.
+- UI now includes online `Đồng bộ ngay`, refresh on focus, tab visible, reconnect and limited interval via /api/tasks (server snapshot). Browser **does not yet consume delta pull/push directly**; offline outbox is G7 and NOT IMPLEMENTED. G5 operator acceptance is NOT GRANTED.
+- Windows checks: Vitest **28/28 PASS**, TypeScript/lint/build/format PASS, G4 real Chrome→Fastify→PostgreSQL test PASS, G4 Chrome mock test PASS. Real PostgreSQL 17 G5 A/B sessions, bootstrap, retry idempotency, payload fingerprint, concurrent revision conflicts and cursor ordering, tombstones, foreign owner denial, bad CSRF/input PASS; isolated test Postgres stopped cleanly.
+- Code pushed `feat/g5-online-sync` at commit `4f75f7a51ef8bc37d772062490d3b13e2c900d71`; GitHub Actions run https://github.com/leuyduc/dayflow/actions/runs/38196775380 was in progress at this intermediate checkpoint. Source evidence `docs/V2_G5_PROGRESS.md`.
+- Found existing DRAFT G4 PR #1 into G3 already documented in repo checkpoint; not merged, edited or superseded. No Ubuntu commands, deployment, production DB or credentials touched. Muse context/cache is managed independently.
