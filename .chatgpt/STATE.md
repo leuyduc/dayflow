@@ -1,14 +1,23 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
+## ACTIVE WORKFLOW — ChatGPT Direct Execution (2026-10-12)
+
+- **Sole implementer:** ChatGPT handles planning, code, QA and GitHub operations directly. **Muse/OpenCode is removed** from DayFlow's active workflow; historical mentions below are non-operative.
+- **Persistence invariant:** BEFORE and AFTER **every logical step**, re-fetch repo STATE + working feature HEAD; after the step commit a fresh STATE/JOURNAL checkpoint and **READ BACK** committed STATE and HEAD before continuing. Do not rely on ChatGPT conversation cache. Contract: `docs/CHATGPT_EXECUTION_PROTOCOL.md`.
+- **Current workflow migration:** new protocol file committed at `eb7d2fca1ebc30f658a99ba84c1f00bb8d1f6d0f`. Updating entrypoint/authority documents is the next bounded documentation step. Current status: IN PROGRESS; do not treat this workflow change as new permission for G5 coding or production.
+- **Gate truth:** G0 audited; G1 security blocked (old root key and network isolation), old G1-D Muse setup retired; G2 QA verified/formal open; G3 technically accepted; G4 technically accepted; G5 code `4f75f7a` passed CI but gate pending; G6–G9 not started.
+- **Next safe step:** Update active `AGENTS.md`, `START_HERE.md`, `.chatgpt/README.md` and V2 authority to refer to direct ChatGPT implementation; then refresh checkpoint and re-read GitHub state.
+- **Do not:** overwrite concurrent G5 changes, force-push, merge `main`, deploy, touch Ubuntu services, security configuration, production database or credentials.
+
 Updated: 2026-10-12 (Asia/Bangkok)
-Owner of this checkpoint: ChatGPT only. Muse/OpenCode independently manages its own cache/context.
+Owner of this checkpoint: ChatGPT direct implementer; no Muse/OpenCode delegation.
 Working repo: `leuyduc/dayflow` (public).
 Working docs branch: `design/linux-fullstack-v2`; default `main` untouched by design/G1 work.
 Master plan: `docs/V2_MASTER_PLAN.md` (consolidated architecture, G0–G9, G1 critical path, evidence and risk register).
 DO NOT put credentials, private key text, internal infrastructure addresses or production data here.
 
 ## Goal
-Linux-hosted OpenCode/Muse (restricted development), React website, Fastify backend, PostgreSQL server source of truth, browser Dexie cache/offline support, secure owner login and multi-device sync. Preserve original DayFlow task/calendar/planner UX. Separate production from autonomous agent.
+ChatGPT directly implements DayFlow React web, Fastify API, PostgreSQL-backed tasks and synchronization in approved isolated development. No Muse/OpenCode. Preserve original task/calendar/planner UX and isolate development from production.
 
 ## End-to-end Gate status (always review all rows before new work)
 | Gate | Current status | Notes |
@@ -30,7 +39,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G1-A old root-key revocation | DEFERRED BY USER / SECURITY BLOCKER | Old exposed public key was observed authorized on Linux; new admin key works. Revocation attempt not completed, old key presumed active |
 | G1-B restricted developer identity | PARTIAL PASS | `dayflow-dev` uid 1001 created, password locked, private home, user-owned public-key SSH. Fresh Windows→Linux SSH returned `whoami=dayflow-dev`; root fresh login still works. `sshd -t` passed; SSH reloaded; SSH/Nginx/Docker/UFW/Cloudflared active afterward. Full negative permission tests blocked by MCP policy |
 | G1-C strong development isolation | AUDITED — NOT PASSED | Fresh dev SSH verified; passive listener inventory and no-payload TCP connections proved reachability to 3 existing loopback services. File-permission negative tests blocked; separate strong isolation and egress controls needed. See `docs/V2_G1C_ISOLATION_AUDIT.md` |
-| G1-D OpenCode/Muse on Linux | NOT STARTED | Linux OpenCode not confirmed installed; no service/tunnel for Muse yet |
+| G1-D historical OpenCode/Muse on Linux | RETIRED FROM WORKFLOW (not PASS) | Operator moved all coding directly to ChatGPT; no installation or delegated agent runtime |
 | G1-E root/admin credential separation and sign-off | NOT STARTED | ChatGPT's Windows MCP can still access a root-authorized administrative SSH key, avoid broad agent delegation |
 
 ## Tooling / reality at last check
