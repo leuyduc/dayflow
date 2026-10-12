@@ -52,3 +52,37 @@ jobs:
           DAYFLOW_TEST_PG_EXTERNAL: "1"
           DAYFLOW_DB_ENV: development
           DATABASE_URL: postgres://dayflow_dev:ci-only-public-test-password@127.0.0.1:5432/dayflow_test_ci
+
+  g4-browser-postgres-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: dayflow_dev
+          # Public throwaway CI-only test password, NEVER a deployment credential.
+          POSTGRES_PASSWORD: ci-only-public-test-password
+          POSTGRES_DB: dayflow_test_g4
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dayflow_dev -d dayflow_test_g4"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build -w @dayflow/api
+      - name: Check preinstalled Chrome
+        run: |
+          command -v google-chrome || command -v chromium
+      - run: npm run test:browser:g4:postgres
+        env:
+          DAYFLOW_TEST_PG_EXTERNAL: "1"
+          DAYFLOW_DB_ENV: development
+          DATABASE_URL: postgres://dayflow_dev:ci-only-public-test-password@127.0.0.1:5432/dayflow_test_g4

@@ -19,6 +19,7 @@ const app = buildApp({
     postgres && csrfSecret && allowedOrigin
       ? {
           store: postgres.store,
+          tasks: postgres.store,
           csrfSecret,
           allowedOrigin,
           cookieSecure: isProduction,
