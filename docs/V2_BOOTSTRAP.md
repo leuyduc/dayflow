@@ -1,3 +1,5 @@
+> **WORKFLOW OVERRIDE 2026-10-12:** Direct ChatGPT implementation replaces OpenCode/Muse coding. The user requires a GitHub checkpoint update and re-read **after every logical step** (see `docs/CHATGPT_EXECUTION_PROTOCOL.md`). Historical agent references below are no longer executable instructions. G1 production security remains blocked.
+
 # DayFlow V2 — Windows-to-Linux Bootstrap Before Agent Installation
 
 ## Purpose
