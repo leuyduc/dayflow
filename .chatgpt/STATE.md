@@ -1,5 +1,14 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
+## IN_PROGRESS — G5 React incremental pull/bootstrap client (2026-10-12)
+
+- Approved development scope: isolated Windows G5 only, G4 technically accepted; G5 Gate NOT accepted, G1 production blocked. Direct ChatGPT coding.
+- Code branch and clean baseline: `feat/g5-online-sync` at `c384f977b1710185b6a1c7963f71eeb4b2e4bacc`, CI 38198257304 3/3 PASS, draft PR #2 OPEN; preserve concurrent changes.
+- Objective: React first login uses authenticated `/api/sync/bootstrap` and online manual/focus/reconnect/interval refresh consumes ordered `/api/sync/pull` deltas including tombstones and pagination; no G7 offline outbox or production work.
+- Acceptance: existing 30+ Vitest, browser mock, Chrome/PostgreSQL E2E, Postgres A/B regression, typecheck/lint/build/format plus new delta tests; verify exact final GitHub CI.
+- NEXT ACTION: implement client delta slice on Windows, test locally, push safe commit, checkpoint and READ BACK GitHub STATE plus source HEAD.
+- Recovery: verify working tree before modifying and compare to `c384f97`; do not overwrite newer HEAD; if blocked record failure without claiming PASS.
+
 ## G5 client edit-conflict slice — LOCAL AND INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
 
 - Protocol: `chatgpt-direct-v1`, implemented directly by ChatGPT, no Muse/OpenCode; source branch `feat/g5-online-sync`.
