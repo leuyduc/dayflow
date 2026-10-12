@@ -163,3 +163,9 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Created `docs/CHATGPT_EXECUTION_PROTOCOL.md`, commit `eb7d2fc` on `design/linux-fullstack-v2`, with mandatory before/after read-back and no Muse handoff.
 - Updated top-of-file STATE to mark new sole implementer, retired G1-D and current G5 status (commit `3f4175c`). Legacy journal stays factual history, not active instruction.
 - No application code/Ubuntu/production/main modifications. Next: align active README/AGENTS/START_HERE/V2 workflow pointers, then verify persisted checkpoint again.
+
+## 2026-10-12 — Active instructions synchronized for direct ChatGPT coding
+- Finished workflow-only edits on `design/linux-fullstack-v2`: created `docs/CHATGPT_EXECUTION_PROTOCOL.md`; rewrote `AGENTS.md`, `START_HERE.md`, `.chatgpt/README.md`; updated master plan, product decisions, architecture, infra security, implementation plan and marked historical G1/OpenCode bootstrap documents retired.
+- New rule requires re-reading live repo STATE/feature HEAD BEFORE every logical task; after task, commit checkpoint/JOURNAL and re-read the committed checkpoint and HEAD BEFORE proceeding. ChatGPT is sole code implementer; Muse/OpenCode is no longer in workflow.
+- Reconciled concurrent G5 development by another session: `feat/g5-online-sync` at `4f75f7a`, CI PASS, user G4 technical acceptance, G5 not accepted. Did NOT overwrite G5 code, source SHA or Gate status.
+- Workflow changes are docs-only; no source code build, Linux operation, root/SSH configuration change, production DB, main merge or deployment. Remaining G1 security blockers unaffected.
