@@ -44,3 +44,12 @@ Status: **SERVER ONLINE SYNC IMPLEMENTED AND TESTED ON WINDOWS DEV; G5 FORMAL AC
 - Exact commit SHA and independent GitHub Actions run must be verified after pushing, especially the existing Postgres 17 integration job (now exercising G5).
 - End-to-end real two-browser event refresh, explicit user choices for edit conflicts, long-disconnected cursor-expiry/snapshot policy and load testing remain for a later G5 hardening pass.
 - **G5 formal acceptance remains pending**, with G1-A exposed old root key and G1-C unproven Muse/Linux isolation remaining critical deployment blockers.
+
+## Follow-up: online edit conflict review in React (2026-10-12)
+
+- G5 task EDIT now uses authenticated `POST /api/sync/push` with a client-generated UUID mutation ID, expected revision and the existing CSRF header. Creation, completion/reopen and deletion still use legacy G4 REST routes, whose writes already feed the same transactional sync log.
+- When another device has already committed a newer revision, the client receives `kind: conflict` and keeps the unsaved edit form intact. It shows the current server version and requires an explicit human choice: **Giữ bản trên máy chủ** (discard this editing form) or **Ghi đè bằng bản của tôi** (new mutation ID with the displayed server revision). If that revision races again, the conflict is shown again rather than overwriting silently.
+- Missing/deleted tasks are surfaced without dropping the unsaved form. Ambiguous network failures are not automatically resubmitted; G7 will add a durable outbox for reliable replay.
+- Added React component tests for both user conflict choices, revision numbers and distinct mutation IDs. Updated mocked Chrome smoke and actual Chrome/Fastify/PostgreSQL E2E harness to register the G5 sync routes.
+- Local validation: TypeScript PASS; ESLint PASS; Vitest 30/30 PASS; build PASS; Prettier PASS; full real Chrome→Fastify→PostgreSQL persistence/reload/edit/complete/delete/logout regression PASS. A first real-browser test failed because its test app omitted the G5 sync route registration; the harness was corrected and independently rerun successfully. `npm run test:postgres:local` result and remote CI must be verified against the final commit.
+- **Remaining for complete G5:** browser delta pull/bootstrap consumption, broader conflict controls for status/delete, and independent two-browser conflict E2E. G7 offline queue is out of scope. G5 Gate acceptance and G1 production security remain pending.

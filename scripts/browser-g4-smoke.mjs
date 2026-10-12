@@ -44,6 +44,29 @@ try {
     } else if (path === "/api/auth/logout" && method === "POST") {
       loggedIn = false;
       data = { ok: true };
+    } else if (path === "/api/sync/push" && method === "POST") {
+      if (!loggedIn) {
+        status = 401;
+        data = { error: "unauthorized" };
+      } else if (request.headers()["x-dayflow-csrf"] !== "only-test-csrf") {
+        status = 403;
+        data = { error: "csrf" };
+      } else {
+        const operation = request.postDataJSON().operations[0];
+        const current = tasks.find((task) => task.id === operation.taskId);
+        if (!current) data = { results: [{ kind: "not-found" }] };
+        else if (current.revision !== operation.expectedRevision)
+          data = { results: [{ kind: "conflict", current }] };
+        else {
+          const task = {
+            ...current,
+            ...operation.patch,
+            revision: current.revision + 1,
+          };
+          tasks = tasks.map((item) => (item.id === task.id ? task : item));
+          data = { results: [{ kind: "ok", task, revision: task.revision }] };
+        }
+      }
     } else if (path.startsWith("/api/tasks")) {
       if (!loggedIn) {
         status = 401;

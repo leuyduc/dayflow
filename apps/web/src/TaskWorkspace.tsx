@@ -16,6 +16,14 @@ export type TaskItem = {
 };
 export type Page = "today" | "inbox" | "calendar" | "settings";
 
+type SyncEditResult =
+  | { kind: "ok"; task: TaskItem | null }
+  | { kind: "conflict"; current: TaskItem | null }
+  | { kind: "not-found" }
+  | { kind: "idempotency-key-reused" };
+
+type SyncPushResponse = { results: SyncEditResult[] };
+
 async function responseJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     if (response.status === 409) throw new Error("Dữ liệu đã được thay đổi. Đã tải lại danh sách.");
@@ -34,6 +42,7 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "inbox" | "completed">("all");
   const [editing, setEditing] = useState<TaskItem | null>(null);
+  const [editConflict, setEditConflict] = useState<TaskItem | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
@@ -133,22 +142,70 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
 
   function startEdit(item: TaskItem) {
     setEditing(item);
+    setEditConflict(null);
     setEditTitle(item.title);
     setEditDescription(item.description ?? "");
     setEditDueDate(item.dueDate ?? "");
     setEditPriority(item.priority);
   }
+  async function submitEdit(expectedRevision: number) {
+    if (!editing || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const response = await fetch("/api/sync/push", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "X-Dayflow-CSRF": csrfToken },
+        body: JSON.stringify({
+          operations: [
+            {
+              clientMutationId: crypto.randomUUID(),
+              type: "update",
+              taskId: editing.id,
+              expectedRevision,
+              patch: {
+                title: editTitle.trim(),
+                description: editDescription.trim() || null,
+                dueDate: editDueDate || null,
+                priority: editPriority,
+              },
+            },
+          ],
+        }),
+      });
+      const result = (await responseJson<SyncPushResponse>(response)).results[0];
+      if (!result) throw new Error("Không nhận được kết quả đồng bộ.");
+      if (result.kind === "conflict" && result.current) {
+        setEditConflict(result.current);
+        setError("Công việc đã được sửa trên thiết bị khác. Hãy so sánh hai phiên bản.");
+        await reload();
+        return;
+      }
+      if (result.kind === "not-found" || result.kind === "conflict") {
+        setEditConflict(null);
+        setError(
+          "Công việc không còn tồn tại trên máy chủ. Nội dung bạn đang sửa vẫn được giữ trong biểu mẫu.",
+        );
+        await reload();
+        return;
+      }
+      if (result.kind !== "ok") throw new Error("Yêu cầu chỉnh sửa không hợp lệ. Hãy thử lại.");
+      setEditing(null);
+      setEditConflict(null);
+      await reload();
+    } catch (issue) {
+      // Do not silently discard the user's draft or auto-retry an ambiguous write.
+      setError(issue instanceof Error ? issue.message : "Không thể đồng bộ chỉnh sửa.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function saveEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!editing) return;
-    const ok = await mutate("PATCH", "/api/tasks/" + editing.id, {
-      expectedRevision: editing.revision,
-      title: editTitle.trim(),
-      description: editDescription.trim() || null,
-      dueDate: editDueDate || null,
-      priority: editPriority,
-    });
-    if (ok) setEditing(null);
+    if (editConflict) return;
+    await submitEdit(editing?.revision ?? 0);
   }
   const shown = useMemo(
     () =>
@@ -340,11 +397,53 @@ export function TaskWorkspace({ csrfToken, page }: { csrfToken: string; page: Pa
             <option value="high">Cao</option>
             <option value="urgent">Khẩn cấp</option>
           </select>
+          {editConflict && (
+            <div className="message-card conflict-review" role="alert">
+              <div>
+                <h3>Xung đột chỉnh sửa — cần lựa chọn</h3>
+                <p>Thiết bị khác đã lưu phiên bản {editConflict.revision}.</p>
+                <p>
+                  <strong>Bản trên máy chủ:</strong> {editConflict.title}
+                </p>
+                <p>
+                  {editConflict.description ?? "Không có mô tả"} · Hạn{" "}
+                  {editConflict.dueDate ?? "chưa đặt"} · Ưu tiên {editConflict.priority}
+                </p>
+                <p>Bản của bạn vẫn ở biểu mẫu phía trên và chưa được ghi đè lên máy chủ.</p>
+                <div className="edit-actions">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setEditing(null);
+                      setEditConflict(null);
+                      setError("");
+                    }}
+                  >
+                    Giữ bản trên máy chủ
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy || !editTitle.trim()}
+                    onClick={() => void submitEdit(editConflict.revision)}
+                  >
+                    Ghi đè bằng bản của tôi
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="edit-actions">
-            <button type="submit" disabled={busy || !editTitle.trim()}>
+            <button type="submit" disabled={busy || !editTitle.trim() || !!editConflict}>
               Lưu thay đổi
             </button>
-            <button type="button" onClick={() => setEditing(null)}>
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(null);
+                setEditConflict(null);
+              }}
+            >
               Hủy
             </button>
           </div>

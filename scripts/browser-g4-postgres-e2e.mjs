@@ -122,6 +122,7 @@ try {
     auth: {
       store: instance.store,
       tasks: instance.store,
+      sync: instance.store,
       csrfSecret,
       allowedOrigin: appOrigin,
       cookieSecure: false,
