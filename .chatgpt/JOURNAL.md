@@ -196,3 +196,9 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Verified **32/32 Vitest PASS**, typecheck/lint/build/Prettier PASS; Chrome mocked smoke PASS, real Chrome/Vite/Fastify/PostgreSQL E2E PASS, real PostgreSQL 17 A/B two-device/idempotency/cursor/tombstone integration PASS; git diff whitespace PASS. All Windows dev or isolated tests, no production.
 - Committed/pushed `bddaea29843c0a684ba13f9f0191919f78dc623a` to `feat/g5-online-sync`; local branch clean and exact remote HEAD matched. Draft G5 PR #2 open and unmerged. **Exact new GitHub Actions result pending independent verification**; do not claim it passed yet.
 - G5 formal acceptance remains pending. Next: verify exact CI run and jobs, then checkpoint and read back. G1 production security still blocked.
+
+## 2026-10-12 — Independent CI PASS for G5 delta-client bddaea2
+- Verified exact head SHA `bddaea29843c0a684ba13f9f0191919f78dc623a` with GitHub Actions completed SUCCESS runs `38199249827` and `38199246279`, both for the same source SHA.
+- **Both runs all 3/3 jobs SUCCESS:** `checks` (npm typecheck, lint, 32 Vitest, build, Prettier), `online-sync-postgres-integration` (real `npm run test:postgres:ci`), `g4-browser-postgres-e2e` (actual Chrome and `npm run test:browser:g4:postgres`).
+- Source: https://github.com/leuyduc/dayflow/actions/runs/38199249827 and https://github.com/leuyduc/dayflow/actions/runs/38199246279 .
+- G5 development QA and CI verified; still NOT operator Gate acceptance, no merge/deploy. Next: update existing draft G5 PR #2 description to reflect delta client without understating remaining broad conflict/multi-browser test gaps.
