@@ -117,3 +117,11 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 ## 2026-10-12 — G4 exact-commit independent CI PASS
 - Checked GitHub Actions run 38167837603 for commit `b435f4dbfbfb3bb16572b5de5cbb481bbfbcc3fb`: `checks` and `g3-postgres-integration` jobs both completed SUCCESS. Confirmed `npm run test:postgres:ci` step SUCCESS; that script exercises G4 real PostgreSQL CRUD as well as G3 auth.
 - Outcome: G4 source pushed and locally verified; independent Linux CI verified. G4 awaits human acceptance, no production deployment or Ubuntu changes.
+
+## 2026-10-12 — Resumed G4 after GitHub context reconciliation; true browser-to-database E2E
+- Retrieved the current GitHub ChatGPT STATE/JOURNAL/LESSONS and G4/master/sync specifications first; verified feature SHA b435f4d, exact-commit successful CI and clean Windows working tree. No Ubuntu actions.
+- Wrote `scripts/browser-g4-postgres-e2e.mjs`: starts isolated Windows localhost PostgreSQL 17, ephemeral DB and test-only user, migrates schema, seeds Argon2id owner, runs real Fastify+Vite proxy+Chrome. No network response mocks. Script verifies create SQL row, reload retention, edit SQL row, completed/reopened revisions, tombstone deleted row, mobile overflow, logout and clean shutdown.
+- First run timed out waiting `networkidle` on Vite; corrected to `domcontentloaded` with real element assertions. Re-ran PASS; full test suite 27/27 and typecheck/lint/build/format all PASS.
+- Added independent `g4-browser-postgres-e2e` GitHub Actions job with disposable postgres:17 CI service plus reproducible npm script, updated G4 report/README. Added DESIGN-ONLY `docs/V2_G5_SYNC_PREPARATION.md` to scope G5 safely without claiming it exists.
+- Staged whitespace check PASS; pushed new commit `655d15ee851c965eb1b3483fc8c4fed5cc021c0c` to `feat/g4-task-crud`; clean worktree. GitHub Actions run 38195148862 pending exact-job result at initial checkpoint.
+- No production keys or DB used, and Ubuntu/main untouched. G4 acceptance and G5 authorization remain pending. G1 security blockers unchanged.
