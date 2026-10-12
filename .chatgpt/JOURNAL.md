@@ -125,3 +125,8 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Added independent `g4-browser-postgres-e2e` GitHub Actions job with disposable postgres:17 CI service plus reproducible npm script, updated G4 report/README. Added DESIGN-ONLY `docs/V2_G5_SYNC_PREPARATION.md` to scope G5 safely without claiming it exists.
 - Staged whitespace check PASS; pushed new commit `655d15ee851c965eb1b3483fc8c4fed5cc021c0c` to `feat/g4-task-crud`; clean worktree. GitHub Actions run 38195148862 pending exact-job result at initial checkpoint.
 - No production keys or DB used, and Ubuntu/main untouched. G4 acceptance and G5 authorization remain pending. G1 security blockers unchanged.
+
+## 2026-10-12 — Independent G4 actual browser-to-DB job verified SUCCESS
+- Queried GitHub Actions run 38195148862 and compared `head_sha` to `655d15ee851c965eb1b3483fc8c4fed5cc021c0c`.
+- Confirmed all 3 jobs successful: `checks`, `g3-postgres-integration`, and `g4-browser-postgres-e2e`; G4 job's `Check preinstalled Chrome` and `Run npm run test:browser:g4:postgres` steps each succeeded.
+- G4's full Chrome/Vite/Fastify/PostgreSQL 17 flow now has BOTH isolated Windows test PASS and independent Linux CI PASS. Source branch untouched after the verified SHA; no human G4 signoff and no production deployment.
