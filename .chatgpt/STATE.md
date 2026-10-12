@@ -1,14 +1,14 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
-## IN_PROGRESS — G5 online client conflict resolution (2026-10-12)
+## G5 client edit-conflict slice — LOCAL QA PASSED / CI VERIFICATION PENDING (2026-10-12)
 
-- Protocol: `chatgpt-direct-v1`. ChatGPT directly implements this bounded G5 development slice, no Muse/OpenCode.
-- Approved boundary: G4 technically accepted and G5 isolated Windows development authorized; G5 NOT human accepted. G1 production security remains blocked.
-- Source branch: `feat/g5-online-sync`; baseline SHA `4f75f7a51ef8bc37d772062490d3b13e2c900d71` verified on remote and clean Windows checkout before work.
-- Target: add explicit online edit-conflict handling in React backed by the existing secure G5 `/api/sync/push` protocol, with user choice and tests. Keep G7 durable offline queue out of scope.
-- Verification: targeted Vitest/UI, TypeScript, lint, build, format, real browser/PostgreSQL regression when possible, independent exact-SHA GitHub CI.
-- Recovery: inspect live target HEAD and local git status; compare to this baseline. Do not overwrite concurrent G5 edits. Never touch `main`, Ubuntu services or production DB.
-- Current status: IN_PROGRESS. Next action: implement one tested G5 client change on the Windows development checkout; then commit source, update STATE/JOURNAL and read back from GitHub.
+- Protocol: `chatgpt-direct-v1`, implemented directly by ChatGPT, no Muse/OpenCode; source branch `feat/g5-online-sync`.
+- Verified source commit: `c384f977b1710185b6a1c7963f71eeb4b2e4bacc` (pushed; Windows checkout clean and same as origin).
+- Delivered: React EDIT writes through authenticated `POST /api/sync/push`; on revision conflict the UI keeps the unsaved draft and shows current server version. Explicit user choice keeps the newer server edit or resubmits the user's draft against the displayed revision with a NEW UUID. No silent overwrite and no durable offline queue.
+- QA locally: typecheck PASS; ESLint PASS; Vitest **30/30 PASS**; production build PASS; Prettier PASS; real Chrome→Fastify→PostgreSQL end-to-end PASS (after enabling the sync route in the E2E test harness); Chrome mock smoke PASS; PostgreSQL 17 two-device A/B sync integration PASS; diff --check PASS.
+- First real browser E2E failed because the pre-G5 test harness did not register `sync` in the Fastify auth options; corrected, reran all browser/Postgres steps PASS. First new component-test assertion had duplicate matching titles, fixed with a multi-element query and rerun PASS. The historical failures are documented, not hidden.
+- Next exact step: independently verify GitHub Actions CI for final source SHA `c384f977b1710185b6a1c7963f71eeb4b2e4bacc`, then update STATE/JOURNAL and READ BACK. Do NOT mark GitHub CI successful before observing it.
+- Gate status: G5 PARTIAL / NOT ACCEPTED. Browser delta-feed consumption and broader conflict paths still remain. G1-A/C security still BLOCK production; no Ubuntu, `main` or release modifications.
 
 ## ACTIVE WORKFLOW — ChatGPT Direct Execution (2026-10-12)
 
@@ -37,7 +37,7 @@ ChatGPT directly implements DayFlow React web, Fastify API, PostgreSQL-backed ta
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
 | G4 — Task UI/API | TECHNICALLY ACCEPTED BY USER / G1 SECURITY STILL BLOCKS PRODUCTION | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
-| G5 — Two-device online sync | SERVER/API + LOCAL/INDEPENDENT CI PASS / GATE NOT ACCEPTED | `feat/g5-online-sync` `4f75f7a`; 28 Vitest, A/B concurrency/idempotency/tombstone tests. UI online refresh via full snapshots; delta UI & offline queue NOT completed |
+| G5 — Two-device online sync | CLIENT CONFLICT SLICE LOCAL QA PASS / NEW CI PENDING / GATE NOT ACCEPTED | `feat/g5-online-sync` `c384f97`; 30 Vitest, PostgreSQL A/B, real Chrome E2E PASS; edit conflict review UI. Incremental delta UI & offline queue incomplete |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
 | G8 — Import/export + DB backups | NOT STARTED | |
