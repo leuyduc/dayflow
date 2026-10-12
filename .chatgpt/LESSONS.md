@@ -142,3 +142,7 @@ Lesson: Assert invariant (owner task present, foreign task absent), not brittle 
 ## 2026-10-12 — G5 API readiness is not G7 offline readiness
 Observed: Secure G5 push/pull/bootstrap and online React reload exist, while browser writes still use G4 HTTP routes and periodical full snapshots; no browser durable offline outbox or direct delta feed consumption has been implemented.
 Lesson: Report API sync and UI online-refresh separately, and keep delta-client integration, visible conflict-resolution controls, and offline durability as explicit acceptance items instead of claiming they are automatically complete.
+
+## 2026-10-12 — Concurrent GitHub sessions require per-step head reconciliation
+Observed: during workflow migration, another active session advanced the design checkpoint and created the G5 branch; the initial documentation batch based on an earlier tree was interrupted by a GitHub error. A fresh branch/STATE fetch showed newer G4 acceptance and G5 CI evidence.
+Lesson: Never reuse a cached branch SHA or an earlier STATE snapshot across multi-step operations. Read live HEAD + current checkpoint before and after each logical step, use optimistic blob SHA writes, preserve append-only history and do not silently overwrite concurrent feature/Gate progress. If a batch call errors, verify actual remote side effects before retrying.
