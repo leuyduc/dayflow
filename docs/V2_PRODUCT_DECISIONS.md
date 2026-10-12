@@ -1,13 +1,15 @@
+> **WORKFLOW OVERRIDE 2026-10-12:** Direct ChatGPT implementation replaces OpenCode/Muse coding. The user requires a GitHub checkpoint update and re-read **after every logical step** (see `docs/CHATGPT_EXECUTION_PROTOCOL.md`). Historical agent references below are no longer executable instructions. G1 production security remains blocked.
+
 # DayFlow V2 — Approved Product and Architecture Decisions
 Status: DESIGN APPROVED IN PRINCIPLE; IMPLEMENTATION NOT AUTHORIZED until Gate G0 review.
 Authority: This document, V2_ARCHITECTURE.md, V2_SYNC_PROTOCOL.md, V2_INFRA_SECURITY.md and V2_IMPLEMENTATION_PLAN.md take precedence over V1 docs whenever inconsistent. Preserve V1 task UX, scheduling domain rules, accessibility and testing goals where not superseded.
 
 ## New deployment model
-- Windows is an operator workstation. OpenCode/Muse runs on the Linux development workspace.
+- Windows is a development/operator workstation. ChatGPT codes directly through approved tools; Muse/OpenCode is retired.
 - A Linux host serves the DayFlow website and backend. The production database is PostgreSQL.
 - A single owner account can sign in on multiple devices and sync tasks/settings. Do NOT provide public self-registration in MVP.
 - The server is authoritative for persisted synchronized records. Browser Dexie/IndexedDB is a local cache and, at the appropriate gate, a durable outbox for offline changes.
-- The application and agent are different trust zones. An agent that can execute arbitrary shell commands MUST NOT have access to production secrets, production database, deployment credentials, privileged container daemon or Docker socket.
+- Production and ChatGPT development tools remain separate trust zones. Coding execution MUST NOT have access to production secrets/database, deployment credentials, privileged container daemon or Docker socket.
 
 ## Preserved product functionality
 Quick capture, task CRUD, Today/Inbox/Upcoming/Completed/All, search/filter/sort, due dates, priority, subtasks, tags, estimated duration, calendar day/week/month, deterministic schedule proposals with explicit acceptance, settings, JSON export/import and accessible responsive UI.
