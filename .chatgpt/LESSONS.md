@@ -114,3 +114,7 @@ Lesson: For development servers with HMR/websocket/network activity, wait for se
 ## 2026-10-12 — G5 cannot be inferred from G4 revision columns
 Observed: G4 has owner-scoped `revision` and tombstones, but the schema has no transactional change log, processed mutation IDs or commit-safe per-owner cursor.
 Lesson: Never claim multi-device synchronization on the strength of ordinary CRUD. Before G5, plan a serialized-per-owner transactional writer, idempotency ledger and ordered change feed with tests for two clients, retries and out-of-order transactions; G7 offline queue remains separate.
+
+## 2026-10-12 — Browser/database E2E must be independently repeated on CI
+Observed: the G4 integration was successful on Windows with native PostgreSQL, and GitHub Actions run 38195148862 separately passed its `g4-browser-postgres-e2e` job on a Linux runner with ephemeral postgres:17 and preinstalled Chrome.
+Lesson: Record exact source SHA, workflow run, job and test step. A local browser/DB PASS plus a Linux CI browser/DB PASS is stronger than isolated frontend mocks, but neither substitutes for operator acceptance or production security gates.
