@@ -1,13 +1,15 @@
+> **WORKFLOW OVERRIDE 2026-10-12:** Direct ChatGPT implementation replaces OpenCode/Muse coding. The user requires a GitHub checkpoint update and re-read **after every logical step** (see `docs/CHATGPT_EXECUTION_PROTOCOL.md`). Historical agent references below are no longer executable instructions. G1 production security remains blocked.
+
 # DayFlow V2 — Full-stack Technical Architecture
 
 ## Logical topology
-Windows browser/terminal -- SSH tunnel --> Linux development identity + OpenCode/Muse
+ChatGPT direct coding --> approved Windows/GitHub development tools
 Users' browsers -- HTTPS --> Caddy reverse proxy --> / (built React app), /api (Fastify API)
 Fastify API -- private service network --> PostgreSQL (authoritative data)
 Browsers -- Dexie/IndexedDB --> cached tasks and pending edits; sync with API
 GitHub -- PR review + CI --> approved release artifact --> controlled production deploy
 
-The development agent and production services may reside on the same physical Linux host ONLY with proven isolation; separate VMs/hosts are preferable if resources allow.
+Direct development and production may share a Linux host ONLY after proven isolation and scoped operator authorization; Muse/OpenCode runtime is no longer part of this design.
 
 ## Locked stack (verify compatibility at G0)
 Monorepo: npm workspaces (or existing manager if audited and justified).
@@ -51,7 +53,7 @@ Exact contracts and permissions are specified before implementation.
 - Separate dev/test/staging/production credentials, databases, container networks, volumes and compose project names.
 - Production runtime is immutable deployment output, not agent workspace mounted into production.
 - CI executes lint, typecheck, tests, build, security checks and artifact creation.
-- Human approves promotions; agent cannot deploy to production, change DNS, access prod credentials or run prod migrations.
+- Human approves promotions; development tooling cannot autonomously deploy to production, change DNS, access prod credentials or run prod migrations.
 
 ## Non-functional requirements
 Responsive keyboard-accessible UI; explicit loading/empty/error/conflict states; request IDs; health/readiness probes; deploy rollback plan; offsite encrypted DB backup and restore drill; logging without task content or secrets; HTTPS only outside localhost.
