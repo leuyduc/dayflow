@@ -151,3 +151,8 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - All three jobs completed SUCCESS: `checks`, `g3-postgres-integration`, and new `g4-browser-postgres-e2e`; explicitly confirmed the Chrome availability step and `npm run test:browser:g4:postgres` step both SUCCESS.
 - Link: https://github.com/leuyduc/dayflow/actions/runs/38195148862 . This supersedes the earlier “new CI pending” statement for that exact SHA.
 - G4 **developer QA + independent full-browser-to-PostgreSQL CI verified**; human Gate G4 acceptance remains NOT GRANTED. G5 design-only document exists; G5 implementation/authorization not started. G1 production safety blockers remain unremediated.
+
+## Final local Git reconciliation — 2026-10-12
+- Windows checkout originated from `git clone --single-branch` at G2, so `remote.origin.fetch` only covered `feat/fullstack-foundation`; even after pushing G4, `origin/feat/g4-task-crud` was missing locally and `git status` did not show remote tracking. This was not source divergence.
+- Corrected **local checkout Git fetch refspec only** to `+refs/heads/*:refs/remotes/origin/*`, fetched remote refs and set `feat/g4-task-crud` upstream. Verified `git status --short --branch` reports `feat/g4-task-crud...origin/feat/g4-task-crud` with clean worktree, both local/remote `655d15ee851c965eb1b3483fc8c4fed5cc021c0c`.
+- No source file, remote branch, or production changes made by this Git tracking correction.
