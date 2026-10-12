@@ -1,5 +1,14 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
+## PROGRESS SNAPSHOT VERIFIED — 2026-10-12 (Asia/Bangkok)
+
+- Operator requested a durable, current progress record. **Created and independently read back** `docs/V2_PROGRESS_SNAPSHOT_2026-10-12.md` on `design/linux-fullstack-v2`; use it as the concise full G0–G9 status, Gate evidence, next-step and security-blocker handoff. Link: https://github.com/leuyduc/dayflow/blob/design/linux-fullstack-v2/docs/V2_PROGRESS_SNAPSHOT_2026-10-12.md
+- Reconciled **live code HEAD** `feat/g5-online-sync` `2cae8015f69718bbaa857c9b0affff18f4c45d7c` and **Draft/Open/Unmerged** PR #2 pointing to exactly that SHA; G5 technical tests PASS but formal operator Gate acceptance still **PENDING**.
+- CI independently re-verified for **exact SHA `2cae8015`**: push run `38199682438` and PR run `38199686885` both SUCCESS, 3/3 jobs each (typecheck/lint/32 Vitest/build/format, real PostgreSQL 17 A/B sync, real Chrome two-browser conflict E2E).
+- G0 AUDITED, G1 NOT PASSED (old root key, isolation and admin credential separation unresolved), G2 dev QA PASS / formal Gate open, G3 technical acceptance granted, G4 technical acceptance granted, G5 Windows dev+CI PASS / formal Gate open, G6–G9 NOT STARTED. G1-D OpenCode/Muse retired, not PASSED.
+- **No** implementation, `main`, production, Ubuntu, keys, deployment or migration changes were authorized or performed in this reporting step.
+- **Next safe development step:** within existing approved G5 Windows-only scope, cover complete/reopen/delete revision-conflict UX and tests, then retention/cursor/load review. Before the next step read back latest `.chatgpt/STATE.md` and live G5 HEAD; after it checkpoint, append journal and read back again. Keep PR #2 Draft until explicit Gate acceptance.
+
 ## G5 two-real-browser competing edits — WINDOWS + INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
 
 - ChatGPT directly implemented tests inside approved Windows G5 development scope. G5 human Gate acceptance remains PENDING; Linux G1 security NOT PASSED.
