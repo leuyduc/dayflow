@@ -135,3 +135,9 @@ Public, sanitized record of actions and supporting evidence. **ChatGPT-only cont
 - Final local/remote check revealed `git clone --single-branch` from earlier G2 had left `remote.origin.fetch` pinned to `feat/fullstack-foundation`; `origin/feat/g4-task-crud` was missing locally despite the remote branch existing and matching published SHA.
 - Changed only this checkout's Git fetch refspec to the standard wildcard, fetched, configured G4 upstream, and independently verified clean local/remote SHA equality at `655d15ee851c965eb1b3483fc8c4fed5cc021c0c`.
 - No remote force push, source code edit or Ubuntu action.
+
+## 2026-10-12 — GitHub state reconciliation and G4 review packaging
+- Reopened current design-branch ChatGPT checkpoint and G4/G5 documents; independently compared source branches and exact commits. Default main still LICENSE-only by design; no merges.
+- GitHub Actions run 38195148862 at G4 SHA 655d15e is completed SUCCESS: checks, G3/PostgreSQL integration and full Chrome/PostgreSQL E2E jobs each PASS.
+- Created DRAFT PR #1 https://github.com/leuyduc/dayflow/pull/1, G4 feature branch into G3 baseline. PR body documents delivered functionality, CI proof, pending human gate acceptance, G1 production blockers and separate G5 authorization requirement.
+- Updated ChatGPT checkpoint on documentation branch to remove stale G4 SHA. No code rewrite, server access, deployment, main merge or gate promotion. Next: human G4 review then independently scoped G5 work.
