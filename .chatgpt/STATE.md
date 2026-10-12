@@ -17,7 +17,7 @@ Linux-hosted OpenCode/Muse (restricted development), React website, Fastify back
 | G1 — SSH, identity, isolation, OpenCode | IN PROGRESS / OVERALL NOT PASSED | See substeps below |
 | G2 — Full-stack foundation | QA EXPANDED ON WINDOWS / GATE NOT ACCEPTED | `feat/fullstack-foundation` at `920fa74`: React/Fastify scaffold; 10/10 tests, lint/typecheck/build/format PASS; real Chrome desktop/mobile smoke PASS. GitHub Actions successful for exact SHA 920fa74; no Linux deployment. See feature-branch G2 QA evidence |
 | G3 — Authentication + database | TECHNICALLY ACCEPTED BY USER; PROD SECURITY G1 BLOCKS | `a3074d9` + CI `38166399632`; accepted for development progression, not Ubuntu production |
-| G4 — Task UI/API | DEVELOPMENT QA + INDEPENDENT CI PASS / GATE NOT ACCEPTED | `feat/g4-task-crud` `b435f4d`; 27 tests, PostgreSQL 17 actual HTTP CRUD, Chrome UI mock smoke PASS |
+| G4 — Task UI/API | FULL CHROME→POSTGRES CI PASS / GATE NOT ACCEPTED | `feat/g4-task-crud` `655d15e`; 3/3 GitHub Actions jobs PASS; draft PR #1 for human review, no merge |
 | G5 — Two-device online sync | NOT STARTED | |
 | G6 — Calendar + scheduling | NOT STARTED | |
 | G7 — Offline queue and PWA | NOT STARTED | |
@@ -156,3 +156,9 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Windows checkout originated from `git clone --single-branch` at G2, so `remote.origin.fetch` only covered `feat/fullstack-foundation`; even after pushing G4, `origin/feat/g4-task-crud` was missing locally and `git status` did not show remote tracking. This was not source divergence.
 - Corrected **local checkout Git fetch refspec only** to `+refs/heads/*:refs/remotes/origin/*`, fetched remote refs and set `feat/g4-task-crud` upstream. Verified `git status --short --branch` reports `feat/g4-task-crud...origin/feat/g4-task-crud` with clean worktree, both local/remote `655d15ee851c965eb1b3483fc8c4fed5cc021c0c`.
 - No source file, remote branch, or production changes made by this Git tracking correction.
+
+## 2026-10-12 — Resume review and G4 draft pull request
+- Reconciled all six remote branches. `main` intentionally contains only LICENSE; full V2 code lives on separate G2–G4 feature branches; G3 was technically accepted, G4 remains pending human acceptance.
+- Independently reconfirmed exact G4 HEAD `655d15ee851c965eb1b3483fc8c4fed5cc021c0c` and GitHub Actions run https://github.com/leuyduc/dayflow/actions/runs/38195148862: all 3/3 jobs (`checks`, `g3-postgres-integration`, `g4-browser-postgres-e2e`) SUCCESS, with real Chrome→Fastify→PostgreSQL test step SUCCESS.
+- Created draft PR https://github.com/leuyduc/dayflow/pull/1 from `feat/g4-task-crud` into `feat/g3-auth-db` with QA evidence and explicit gates. **No merge, no production/Ubuntu changes, no G4 sign-off and no G5 coding approval.**
+- NEXT DEV ACTION: operator reviews and formally accepts G4; G5 implementation requires separate scoped authorization. G1-A root key and G1-C isolation still block production/autonomous Linux Muse. Keep `main` untouched.
