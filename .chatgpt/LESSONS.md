@@ -118,3 +118,7 @@ Lesson: Never claim multi-device synchronization on the strength of ordinary CRU
 ## 2026-10-12 — Browser/database E2E must be independently repeated on CI
 Observed: the G4 integration was successful on Windows with native PostgreSQL, and GitHub Actions run 38195148862 separately passed its `g4-browser-postgres-e2e` job on a Linux runner with ephemeral postgres:17 and preinstalled Chrome.
 Lesson: Record exact source SHA, workflow run, job and test step. A local browser/DB PASS plus a Linux CI browser/DB PASS is stronger than isolated frontend mocks, but neither substitutes for operator acceptance or production security gates.
+
+## 2026-10-12 — Single-branch clone can hide later feature branch tracking
+Observed: a G2 `--single-branch` clone had a narrow `remote.origin.fetch`, so new G4 remote branch tracking was absent even after successful push; ordinary `git fetch origin` did not create that tracking ref.
+Lesson: On subsequent feature branches inspect `git config --get-all remote.origin.fetch` and `git branch -vv`. Restore a wildcard fetch refspec only in the local checkout, fetch and set upstream, then compare exact HEAD/origin SHA. Never treat lack of a tracking ref as proof of remote data loss.
