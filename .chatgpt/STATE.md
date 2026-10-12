@@ -1,5 +1,15 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
+## IN_PROGRESS — G5 online client conflict resolution (2026-10-12)
+
+- Protocol: `chatgpt-direct-v1`. ChatGPT directly implements this bounded G5 development slice, no Muse/OpenCode.
+- Approved boundary: G4 technically accepted and G5 isolated Windows development authorized; G5 NOT human accepted. G1 production security remains blocked.
+- Source branch: `feat/g5-online-sync`; baseline SHA `4f75f7a51ef8bc37d772062490d3b13e2c900d71` verified on remote and clean Windows checkout before work.
+- Target: add explicit online edit-conflict handling in React backed by the existing secure G5 `/api/sync/push` protocol, with user choice and tests. Keep G7 durable offline queue out of scope.
+- Verification: targeted Vitest/UI, TypeScript, lint, build, format, real browser/PostgreSQL regression when possible, independent exact-SHA GitHub CI.
+- Recovery: inspect live target HEAD and local git status; compare to this baseline. Do not overwrite concurrent G5 edits. Never touch `main`, Ubuntu services or production DB.
+- Current status: IN_PROGRESS. Next action: implement one tested G5 client change on the Windows development checkout; then commit source, update STATE/JOURNAL and read back from GitHub.
+
 ## ACTIVE WORKFLOW — ChatGPT Direct Execution (2026-10-12)
 
 - **Sole implementer:** ChatGPT handles planning, code, QA and GitHub operations directly. **Muse/OpenCode is removed** from DayFlow's active workflow; historical mentions below are non-operative.
