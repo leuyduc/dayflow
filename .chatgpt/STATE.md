@@ -1,5 +1,13 @@
 # DayFlow V2 — ChatGPT Operator Checkpoint
 
+## IN_PROGRESS — G5 two-real-browser competing edits E2E (2026-10-12)
+
+- Protocol: ChatGPT direct coding, persistent checkpoint BEFORE/AFTER every logical step. Scope: approved isolated Windows-only G5 development, G5 Gate pending, Ubuntu/production/G1 blocked.
+- Baseline G5 feature HEAD `bddaea29843c0a684ba13f9f0191919f78dc623a`, independently verified 32/32 tests and GitHub CI runs 38199249827 + 38199246279 SUCCESS; Draft PR #2 open and unmerged.
+- Goal: extend real Chrome→Fastify→PostgreSQL E2E with TWO independent authenticated browser contexts concurrently editing same task, test conflict UI keep-server and explicit reapply-with-new-revision, and verify final SQL data/revision. Do NOT invent success.
+- NEXT: verify Windows local branch is clean and matches live GitHub HEAD, implement surgical E2E test only, run local tests, commit/push and independently inspect final CI, checkpoint/read-back.
+- Safety: no production/Ubuntu/SSH/privileged operations, no merge, no G6/G7 scope. Preserve other sessions' work and recheck HEAD before push.
+
 ## G5 React incremental pull/bootstrap — LOCAL + INDEPENDENT CI PASS / GATE NOT ACCEPTED (2026-10-12)
 
 - Active workflow `chatgpt-direct-v1`. Scope: G5 Windows development only. G4 technically accepted, G5 Gate NOT accepted, G1 production/security NOT PASSED.
