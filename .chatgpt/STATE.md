@@ -4,9 +4,9 @@
 
 - **Sole implementer:** ChatGPT handles planning, code, QA and GitHub operations directly. **Muse/OpenCode is removed** from DayFlow's active workflow; historical mentions below are non-operative.
 - **Persistence invariant:** BEFORE and AFTER **every logical step**, re-fetch repo STATE + working feature HEAD; after the step commit a fresh STATE/JOURNAL checkpoint and **READ BACK** committed STATE and HEAD before continuing. Do not rely on ChatGPT conversation cache. Contract: `docs/CHATGPT_EXECUTION_PROTOCOL.md`.
-- **Current workflow migration:** new protocol file committed at `eb7d2fca1ebc30f658a99ba84c1f00bb8d1f6d0f`. Updating entrypoint/authority documents is the next bounded documentation step. Current status: IN PROGRESS; do not treat this workflow change as new permission for G5 coding or production.
+- **Current workflow migration:** COMPLETE for the authoritative V2 design branch: protocol, `AGENTS.md`, `START_HERE.md`, `.chatgpt/README.md`, master plan, architecture, product decisions, implementation and security references updated. Direct coding remains subject to human Gate scope; no production or G5 acceptance implied.
 - **Gate truth:** G0 audited; G1 security blocked (old root key and network isolation), old G1-D Muse setup retired; G2 QA verified/formal open; G3 technically accepted; G4 technically accepted; G5 code `4f75f7a` passed CI but gate pending; G6–G9 not started.
-- **Next safe step:** Update active `AGENTS.md`, `START_HERE.md`, `.chatgpt/README.md` and V2 authority to refer to direct ChatGPT implementation; then refresh checkpoint and re-read GitHub state.
+- **Next safe step:** For the next explicitly scoped coding task, recover this STATE + current G5 feature HEAD first, review G5 remaining UI/QA and operator acceptance; ChatGPT implements directly on a safe feature branch, then checkpoints/read-backs after EACH logical step. G1 security remediation requires its own approval.
 - **Do not:** overwrite concurrent G5 changes, force-push, merge `main`, deploy, touch Ubuntu services, security configuration, production database or credentials.
 
 Updated: 2026-10-12 (Asia/Bangkok)
@@ -187,3 +187,9 @@ Ask operator to approve one of: (preferred) separate VM/host with explicit netwo
 - Three jobs SUCCESS: `checks`, `online-sync-postgres-integration`, and `g4-browser-postgres-e2e`. Verified specifically `npm run build -w @dayflow/api` and `npm run test:postgres:ci` in the sync job were SUCCESS.
 - Link: https://github.com/leuyduc/dayflow/actions/runs/38196775380 .
 - **Technical development verification passed; user G5 acceptance remains pending.** React uses snapshot refresh and does not yet consume sync delta/push directly; full conflict UI and offline G7 queue are not present. G1 production security blockers still apply; no Ubuntu changes.
+
+## 2026-10-12 — Direct ChatGPT workflow migration COMPLETE (design authority)
+- Operator directive: eliminate Muse/OpenCode from work execution; ChatGPT alone implements all future project tasks. GitHub context/read-back after EVERY logical step is mandatory due to transient ChatGPT conversation/cache context.
+- Updated `docs/CHATGPT_EXECUTION_PROTOCOL.md`, `AGENTS.md`, `START_HERE.md`, `.chatgpt/README.md`, V2 master/product/architecture/infra/implementation documents and retired G1 bootstrap references on `design/linux-fullstack-v2`. Former G1-D is retired (not PASSED); A/C/E security remains open.
+- At this checkpoint design HEAD was `74a0ada1ac780250868950e5330e24831b86e0c7`; G5 source branch HEAD was `4f75f7a51ef8bc37d772062490d3b13e2c900d71` (check again live on resumption). G4 technical acceptance and G5 CI PASS / Gate pending are preserved; no G5 source/code, Ubuntu or production changes in this workflow migration.
+- Before any next step, re-fetch current design STATE and target G5 HEAD, verify no concurrent advancement, then after the step commit updated STATE + append JOURNAL and READ BACK both.
