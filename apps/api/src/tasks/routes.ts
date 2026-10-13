@@ -47,6 +47,7 @@ export function registerTaskRoutes(app: FastifyInstance, store: TaskStore, auth:
     const result = await store.updateTask(owner, id.data, expectedRevision, patch);
     if (result.kind === "not-found") return reply.code(404).send({ error: "not-found" });
     if (result.kind === "conflict") return reply.code(409).send({ error: "revision-conflict" });
+    if (result.kind === "overlap") return reply.code(409).send({ error: "schedule-overlap" });
     return { task: result.task };
   });
 
@@ -58,7 +59,7 @@ export function registerTaskRoutes(app: FastifyInstance, store: TaskStore, auth:
     if (!id.success || !parsed.success) return reply.code(400).send({ error: "invalid-task" });
     const result = await store.deleteTask(owner, id.data, parsed.data.expectedRevision);
     if (result.kind === "not-found") return reply.code(404).send({ error: "not-found" });
-    if (result.kind === "conflict") return reply.code(409).send({ error: "revision-conflict" });
+    if (result.kind !== "ok") return reply.code(409).send({ error: "revision-conflict" });
     return { deleted: true, revision: result.task.revision };
   });
 }

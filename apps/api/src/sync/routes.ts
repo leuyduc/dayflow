@@ -1,6 +1,12 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { createTaskSchema, idSchema } from "../tasks/validation.js";
+import {
+  createTaskSchema,
+  idSchema,
+  scheduleFields,
+  scheduleMessage,
+  scheduleRefine,
+} from "../tasks/validation.js";
 import type { TaskRouteAuth } from "../tasks/routes.js";
 import type { SyncMutation, SyncStore } from "./types.js";
 
@@ -21,9 +27,10 @@ const update = z
     expectedRevision: z.number().int().positive(),
     patch: createTaskSchema
       .partial()
-      .extend({ status: z.enum(["inbox", "completed"]).optional() })
+      .extend({ status: z.enum(["inbox", "completed"]).optional(), ...scheduleFields })
       .strict()
-      .refine((patch) => Object.keys(patch).length > 0, "empty patch"),
+      .refine((patch) => Object.keys(patch).length > 0, "empty patch")
+      .refine(scheduleRefine, scheduleMessage),
   })
   .strict();
 const remove = z
@@ -52,6 +59,13 @@ export function registerSyncRoutes(app: FastifyInstance, store: SyncStore, auth:
     }
     if (write && !(await auth.canMutate(request))) {
       reply.code(403).send({ error: "invalid-origin-or-csrf" });
+      return null;
+    }
+    // A stale workspace must not cache a different owner's bootstrap/pull,
+    // and an outbox must not replay under a newly switched cookie session.
+    const boundOwner = request.headers["x-dayflow-owner"];
+    if (boundOwner !== undefined && boundOwner !== owner) {
+      reply.code(403).send({ error: "owner-session-mismatch" });
       return null;
     }
     reply.header("Cache-Control", "no-store");

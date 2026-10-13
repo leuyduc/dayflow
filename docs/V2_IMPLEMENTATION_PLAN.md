@@ -59,7 +59,15 @@ PASS: documented evidence links, reviewed production release, health checks and 
 - Gate is COMPLETE only after operator acceptance; Muse must stop at gate boundary.
 - Never run production commands, modify firewall/SSH settings, generate live credentials, migrate production schema, force-push, merge to main or expose ports without explicit scoped approval.
 
-## Current handoff (2026-10-12)
-G0 has been audited. G1-B restricted-account SSH access partially passed, but overall G1 is NOT accepted: the exposed old root key is still authorized (G1-A deferred), and G1-C production isolation remains unverified. Next approved work is only the explicitly scoped G1-C isolation plan/checks, not OpenCode installation, autonomous Muse operation or application coding.
+## Current handoff (2026-10-13)
+**Active consolidated roadmap:** `docs/V2_ACTIVE_MASTER_PLAN_20261013.md`. Use it and `.chatgpt/STATE.md` for actual Gate statuses and the order of remaining work; older handoff snippets and OpenCode/Muse references are historical.
 
-**Context discipline:** `.chatgpt/` is an operator-only recovery record for ChatGPT. Muse/OpenCode manages its own context and cache. Do not add repeated full-document reads or replay of ChatGPT's journal to Muse after every step. This does not relax normal project inspection or verification when actually needed.
+The live checkpoint is `.chatgpt/STATE.md`, with the 2026-10-13 journal entry. Read that file before this section.
+
+Short version: active Windows checkout `D:\projects\dayflow`, branch `feat/g5-online-sync` at `2cae801`, dirty and uncommitted. G0 audited; G1 NOT PASSED (G1-A and G1-C). G2–G6 and JSON/settings part of G8 are coded. ESLint, TypeScript, 103 unit tests and build PASS; G6/G8 and extended G7 offline CRUD + conflict Chrome→Fastify→isolated PostgreSQL E2E PASS. G7 production PWA static-shell offline navigation/reload PASS without private API caching (see `docs/V2_G7_EXPANDED_OFFLINE_PWA_QA_20261013.md`; earlier create-only evidence is historical). Full-repo Prettier PASS. G8 offsite DB backup/restore not drilled. G7 remains partial because secure owner reauthentication after cold offline reload and further multi-tab/eviction/security tests remain; G9 not started. Full npm audit still flags 7 development-tool advisories, production-only audit PASS. Do not commit, push, merge, deploy or touch Linux production without separate approval. OpenCode/Muse is not the coder.
+
+The 2026-10-12 handoff below is historical and is not the next action:
+
+G0 has been audited. G1-B restricted-account SSH access partially passed, but overall G1 is NOT accepted: the exposed old root key is still authorized (G1-A deferred), and G1-C production isolation remains unverified. At that date the next approved work was only the G1-C isolation plan, not application coding.
+
+**Context discipline:** `.chatgpt/` is an operator recovery record. Do not treat a green unit test as gate acceptance.

@@ -9,6 +9,10 @@ import type { TaskStore } from "../tasks/types.js";
 import { registerTaskRoutes } from "../tasks/routes.js";
 import type { SyncStore } from "../sync/types.js";
 import { registerSyncRoutes } from "../sync/routes.js";
+import type { BackupStore } from "../backup/types.js";
+import { registerBackupRoutes } from "../backup/routes.js";
+import type { SettingsStore } from "../settings/types.js";
+import { registerSettingsRoutes } from "../settings/routes.js";
 
 const COOKIE = "dayflow_session";
 const SESSION_AGE_SECONDS = 60 * 60 * 24 * 7;
@@ -24,6 +28,8 @@ export interface AuthConfig {
   store: AuthStore;
   tasks?: TaskStore;
   sync?: SyncStore;
+  backup?: BackupStore;
+  settings?: SettingsStore;
   csrfSecret: string;
   allowedOrigin: string;
   cookieSecure?: boolean;
@@ -162,6 +168,8 @@ export async function registerAuth(app: FastifyInstance, options: AuthConfig): P
     },
   };
   if (options.sync) registerSyncRoutes(app, options.sync, routeAuth);
+  if (options.backup) registerBackupRoutes(app, options.backup, routeAuth);
+  if (options.settings) registerSettingsRoutes(app, options.settings, routeAuth);
   if (options.tasks) {
     registerTaskRoutes(app, options.tasks, routeAuth);
   } else {

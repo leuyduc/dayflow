@@ -21,6 +21,8 @@ const app = buildApp({
           store: postgres.store,
           tasks: postgres.store,
           sync: postgres.store,
+          backup: postgres.store,
+          settings: postgres.store,
           csrfSecret,
           allowedOrigin,
           cookieSecure: isProduction,

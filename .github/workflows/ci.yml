@@ -20,6 +20,7 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npm run build
+      - run: npm run test:preview:allowed-hosts
       - run: npm run format:check
 
   online-sync-postgres-integration:

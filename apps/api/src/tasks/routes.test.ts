@@ -60,7 +60,10 @@ class MemoryStore implements AuthStore, TaskStore {
       status: "inbox",
       dueDate: input.dueDate ?? null,
       estimatedMinutes: input.estimatedMinutes ?? null,
+      scheduledStart: null,
+      scheduledEnd: null,
       tags: input.tags ?? [],
+      subtasks: input.subtasks ?? [],
       revision: 1,
       createdAt: now,
       updatedAt: now,
@@ -81,9 +84,26 @@ class MemoryStore implements AuthStore, TaskStore {
     const row = this.tasks.get(id);
     if (!row || row.deleted || row.userId !== userId) return { kind: "not-found" };
     if (row.revision !== revision) return { kind: "conflict" };
+    if (patch.scheduledStart) {
+      const start = Date.parse(patch.scheduledStart);
+      const end = Date.parse(patch.scheduledEnd ?? patch.scheduledStart);
+      const clash = [...this.tasks.values()].some(
+        (other) =>
+          other.id !== id &&
+          other.userId === userId &&
+          !other.deleted &&
+          other.scheduledStart !== null &&
+          other.scheduledEnd !== null &&
+          Date.parse(other.scheduledStart) < end &&
+          Date.parse(other.scheduledEnd) > start,
+      );
+      if (clash) return { kind: "overlap" };
+    }
     Object.assign(row, patch);
     if (patch.status !== undefined)
       row.completedAt = patch.status === "completed" ? new Date().toISOString() : null;
+    else if (patch.scheduledStart !== undefined && row.status !== "completed")
+      row.status = patch.scheduledStart ? "scheduled" : "inbox";
     row.revision++;
     row.updatedAt = new Date().toISOString();
     return { kind: "ok", task: (await this.listTasks(userId)).find((t) => t.id === id)! };
@@ -221,6 +241,70 @@ describe("G4 authorized task API", () => {
     expect(
       (await request("DELETE", "/api/tasks/" + created.id, { expectedRevision: 5 })).statusCode,
     ).toBe(404);
+  });
+  it("persists an accepted schedule block and clears it on unschedule", async () => {
+    const { request } = await fixture();
+    const created = (await request("POST", "/api/tasks", { title: "Lập kế hoạch" })).json()
+      .task as TaskView;
+    const invalid = await request("PATCH", "/api/tasks/" + created.id, {
+      expectedRevision: 1,
+      scheduledStart: "2026-10-12T02:00:00.000Z",
+    });
+    expect(invalid.statusCode).toBe(400);
+    const inverted = await request("PATCH", "/api/tasks/" + created.id, {
+      expectedRevision: 1,
+      scheduledStart: "2026-10-12T03:00:00.000Z",
+      scheduledEnd: "2026-10-12T02:00:00.000Z",
+    });
+    expect(inverted.statusCode).toBe(400);
+    const scheduled = await request("PATCH", "/api/tasks/" + created.id, {
+      expectedRevision: 1,
+      scheduledStart: "2026-10-12T02:00:00.000Z",
+      scheduledEnd: "2026-10-12T03:00:00.000Z",
+    });
+    expect(scheduled.statusCode).toBe(200);
+    expect(scheduled.json().task).toMatchObject({
+      status: "scheduled",
+      scheduledStart: "2026-10-12T02:00:00.000Z",
+      scheduledEnd: "2026-10-12T03:00:00.000Z",
+      revision: 2,
+    });
+    const cleared = await request("PATCH", "/api/tasks/" + created.id, {
+      expectedRevision: 2,
+      scheduledStart: null,
+      scheduledEnd: null,
+    });
+    expect(cleared.json().task).toMatchObject({
+      status: "inbox",
+      scheduledStart: null,
+      scheduledEnd: null,
+    });
+  });
+  it("rejects an overlapping schedule block server-side without changing the task", async () => {
+    const { request } = await fixture();
+    const first = (await request("POST", "/api/tasks", { title: "Khối một" })).json()
+      .task as TaskView;
+    const second = (await request("POST", "/api/tasks", { title: "Khối hai" })).json()
+      .task as TaskView;
+    const booked = await request("PATCH", "/api/tasks/" + first.id, {
+      expectedRevision: 1,
+      scheduledStart: "2026-10-12T02:00:00.000Z",
+      scheduledEnd: "2026-10-12T03:00:00.000Z",
+    });
+    expect(booked.statusCode).toBe(200);
+    const clash = await request("PATCH", "/api/tasks/" + second.id, {
+      expectedRevision: 1,
+      scheduledStart: "2026-10-12T02:30:00.000Z",
+      scheduledEnd: "2026-10-12T04:00:00.000Z",
+    });
+    expect(clash.statusCode).toBe(409);
+    expect(clash.json()).toEqual({ error: "schedule-overlap" });
+    const adjacent = await request("PATCH", "/api/tasks/" + second.id, {
+      expectedRevision: 1,
+      scheduledStart: "2026-10-12T03:00:00.000Z",
+      scheduledEnd: "2026-10-12T04:00:00.000Z",
+    });
+    expect(adjacent.statusCode).toBe(200);
   });
   it("never exposes or mutates a different owner's item", async () => {
     const { app, store, cookie, request } = await fixture();

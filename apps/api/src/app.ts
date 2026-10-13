@@ -9,7 +9,7 @@ export interface AppOptions {
 export function buildApp(options: AppOptions = {}) {
   const app = Fastify({
     logger: false,
-    bodyLimit: 64 * 1024,
+    bodyLimit: 2 * 1024 * 1024,
   });
 
   app.get("/api/health", async () => ({

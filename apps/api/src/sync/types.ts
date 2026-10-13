@@ -22,6 +22,7 @@ export type SyncResult =
     }
   | { clientMutationId: string; kind: "conflict"; current: TaskView | null }
   | { clientMutationId: string; kind: "not-found" }
+  | { clientMutationId: string; kind: "schedule-overlap" }
   | { clientMutationId: string; kind: "idempotency-key-reused" };
 
 export interface SyncChange {

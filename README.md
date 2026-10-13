@@ -1,6 +1,36 @@
-# DayFlow V2 — Full-stack foundation
+# DayFlow V2 — Personal Planner (Development)
 
-This branch (`feat/fullstack-foundation`) contains a tested development scaffold for DayFlow V2. **It is not deployed** and does not yet implement authentication, task persistence, synchronization, or offline edits.
+The current `feat/g5-online-sync` branch contains the React/Vite frontend, Fastify API, PostgreSQL-backed authentication and task CRUD, online synchronization, calendar/scheduling, IndexedDB offline outbox, PWA static shell, settings, and JSON import/export. The software has passed local Chrome/PostgreSQL E2E and has a **private, loopback-only Linux staging** deployment.
+
+**This is not a production release.** G1 SSH/dev isolation, G8 encrypted off-host PostgreSQL restore, and G9 production readiness/approval remain open. `dayflow.liuduc.site` is allowlisted only as an **exact Vite preview hostname**; this does not change the Linux deployment or establish HTTPS, authentication safety or release approval.
+
+To resume work, first read [START_HERE.md](START_HERE.md) and [the active V2 roadmap](docs/V2_ACTIVE_MASTER_PLAN_20261013.md). Verify the actual branch/HEAD/CI instead of relying on older text below.
+
+## Run locally on Windows
+
+With Node.js 22.12+ and npm, double-click `START_DAYFLOW_LOCAL.bat`. It builds the web/API, starts a **localhost-only private PostgreSQL sandbox** and opens the preview at `http://127.0.0.1:5180`. Test login credentials are generated into Git-ignored `.artifacts/dayflow-local-preview/LOGIN-LOCAL-ONLY.txt`; do not share them. See [local preview instructions](docs/DAYFLOW_LOCAL_PREVIEW.md).
+
+Run source regression tests using:
+
+```sh
+npm ci
+npm run format:check
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm run test:preview:allowed-hosts
+```
+
+Additional isolated Chrome/PostgreSQL E2E tests: `npm run test:browser:g6g8:postgres:local`, `npm run test:browser:g7:postgres:local`, and `npm run test:browser:g7:pwa:local`. The local PG wrapper must be installed in the ignored sandbox before running database tests. Evidence is recorded in `docs/V2_G6_G8_LOCAL_E2E_20261013.md` and `docs/V2_G7_EXPANDED_OFFLINE_PWA_QA_20261013.md`.
+
+**Linux:** see [private staging runbook](docs/DAYFLOW_LINUX_STAGING_20261013.md). It is not an Internet-facing production installation. Git pushes do **not** automatically replace or restart the private staging process.
+
+---
+
+## Historical implementation notes (G2–G5)
+
+The following sections document earlier development steps and include outdated phrases about unfinished functionality. The current status is in `START_HERE.md` and `.chatgpt/STATE.md`.
 
 ## Architecture
 - `apps/web`: React 19 + Vite 7 + Tailwind 4, responsive navigation, API status and component tests
