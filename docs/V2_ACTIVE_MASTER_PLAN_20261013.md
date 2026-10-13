@@ -1,10 +1,10 @@
 # DAYFLOW V2 — KẾ HOẠCH TỔNG THỂ ĐANG ÁP DỤNG
 
 Cập nhật: 2026-10-13 (Asia/Bangkok)
-Trạng thái: Kế hoạch thực thi đề xuất dựa trên bằng chứng QA local; **không phải phê duyệt Gate, GitHub push hay production**.
+Trạng thái: Kế hoạch thực thi dựa trên bằng chứng QA local và feature commit GitHub đã push; **không phải nghiệm thu Gate hoặc phê duyệt production**.
 Mục đích: lộ trình thực thi thực tế từ hiện trạng code trên Windows đến nghiệm thu và phát hành an toàn.
 Thư mục làm việc duy nhất: `D:\projects\dayflow`.
-Git: `feat/g5-online-sync`, HEAD `2cae801`; code G6/G7/G8 hiện **chưa commit/push**.
+Git: nhánh `feat/g5-online-sync` đã đẩy code G6/G7/G8 và host allowlist lên GitHub tại feature commit `a10afb6`. Đọc `git rev-parse HEAD` và remote ref để biết SHA hiện tại; **không merge `main`**.
 Điểm khôi phục luôn phải đọc trước: `.chatgpt/STATE.md`. Sau đó xem JOURNAL/LESSONS và Git thực tế.
 Tài liệu này **bổ sung/cập nhật phần trạng thái và quy trình** của `V2_MASTER_PLAN.md` bản 2026-10-12. Quy tắc sản phẩm, đồng bộ, dữ liệu và an toàn trong các tài liệu V2 gốc vẫn có hiệu lực, trừ những chỗ bị chỉ thị vận hành mới thay thế.
 
@@ -31,7 +31,7 @@ Kiến trúc: React/Vite/TypeScript web; Fastify/Zod API; PostgreSQL/Drizzle là
 | G8 — Settings, JSON import/export và DR | Settings/JSON transactional + real Chrome/PostgreSQL E2E PASS | Encrypted off-host DB backup, restore drill xác thực record, operator acceptance |
 | G9 — Public staging/production release | **NOT STARTED / BLOCKED** | Đã deploy **staging nội bộ loopback-only trên Linux** và Chrome E2E PASS ngày 13/10; chưa mở domain/TLS, chưa đạt G1/G8/CI/monitoring/rollback, chưa được nghiệm thu public release. Xem `docs/DAYFLOW_LINUX_STAGING_20261013.md` |
 
-**Bằng chứng hiện hành, không phải Gate sign-off:** lần chạy tổng hợp 2026-10-13 đạt `103/103` unit tests trong 17 file; Prettier, ESLint, TypeScript, build, Chrome/PostgreSQL G6/G7/G8, PWA shell offline, production-only npm audit và `git diff --check` PASS. Hai PostgreSQL sandbox localhost đã dừng. Code local chưa lên GitHub. Full `npm audit` còn 7 cảnh báo dependency phát triển (2 critical, 5 moderate); không `npm audit fix --force` nếu chưa kiểm chứng bản tương thích.
+**Bằng chứng hiện hành, không phải Gate sign-off:** lần chạy tổng hợp 2026-10-13 đạt `103/103` unit tests trong 17 file; Prettier, ESLint, TypeScript, build, Chrome/PostgreSQL G6/G7/G8, PWA shell offline, production-only npm audit và `git diff --check` PASS. Hai PostgreSQL sandbox localhost đã dừng. Đã push code lên **nhánh feature** GitHub; CI cho exact SHA cần kiểm tra độc lập. `main` chưa thay đổi. Full `npm audit` còn 7 cảnh báo dependency phát triển (2 critical, 5 moderate); không `npm audit fix --force` nếu chưa kiểm chứng bản tương thích.
 
 Hồ sơ QA: `docs/V2_G6_G8_LOCAL_E2E_20261013.md`, `docs/V2_G7_EXPANDED_OFFLINE_PWA_QA_20261013.md`.
 

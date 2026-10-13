@@ -1,10 +1,10 @@
 # ChatGPT-only Continuity Protocol — DayFlow
 
-**Active local checkpoint (2026-10-13): `D:\projects\dayflow\.chatgpt\STATE.md` via Windows MCP.** The former `C:\Users\ABC\dayflow` copy is a preserved fallback; never use it for ongoing edits. The remote GitHub branch does not include local uncommitted G6/G8 work, so do not reset D to match remote.
+**Active local checkpoint (2026-10-13): `D:\projects\dayflow\.chatgpt\STATE.md` via Windows MCP.** The former `C:\Users\ABC\dayflow` copy is a preserved fallback; never use it for ongoing edits. The remote GitHub `feat/g5-online-sync` branch now includes G6/G7/G8 work via pushed feature commit `a10afb6`; always check actual remote/local SHA and preserve any newer uncommitted D edits.
 
 **Applies only to ChatGPT acting as operator/coordinator. It is NOT an instruction to Muse/OpenCode.**
 
-OpenCode/Muse independently manages its context, cache, and agent sessions. **Do not** make Muse re-read plans, logs, lessons, or all specs after every step merely to compensate for ChatGPT's context limits. Do not inject this directory into Muse prompts or treat its files as Muse-required input.
+OpenCode/Muse has been retired from the DayFlow implementation workflow. This directory is the direct ChatGPT operator continuity checkpoint, not a separate coding-agent cache.
 
 ## Mandatory ChatGPT workflow
 At the start of every new/resumed ChatGPT session, or after context becomes uncertain:
