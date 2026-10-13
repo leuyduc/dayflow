@@ -47,6 +47,7 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci --ignore-scripts
+      - run: npm run build -w @dayflow/domain
       - run: npm run build -w @dayflow/api
       - run: npm run test:postgres:ci
         env:
@@ -78,6 +79,7 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci --ignore-scripts
+      - run: npm run build -w @dayflow/domain
       - run: npm run build -w @dayflow/api
       - name: Check preinstalled Chrome
         run: |
