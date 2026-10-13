@@ -1,3 +1,9 @@
+export interface Subtask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 export interface TaskView {
   id: string;
   title: string;
@@ -6,7 +12,10 @@ export interface TaskView {
   priority: "low" | "medium" | "high" | "urgent";
   dueDate: string | null;
   estimatedMinutes: number | null;
+  scheduledStart: string | null;
+  scheduledEnd: string | null;
   tags: string[];
+  subtasks: Subtask[];
   revision: number;
   createdAt: string;
   updatedAt: string;
@@ -20,12 +29,20 @@ export interface TaskCreate {
   dueDate?: string | null;
   estimatedMinutes?: number | null;
   tags?: string[];
+  subtasks?: Subtask[];
 }
 
-export type TaskPatch = Partial<TaskCreate> & { status?: "inbox" | "completed" };
+export type TaskPatch = Partial<TaskCreate> & {
+  status?: "inbox" | "completed";
+  scheduledStart?: string | null;
+  scheduledEnd?: string | null;
+};
 
 export type ChangeResult =
-  { kind: "ok"; task: TaskView } | { kind: "not-found" } | { kind: "conflict" };
+  | { kind: "ok"; task: TaskView }
+  | { kind: "not-found" }
+  | { kind: "conflict" }
+  | { kind: "overlap" };
 
 export interface TaskStore {
   listTasks(userId: string): Promise<TaskView[]>;

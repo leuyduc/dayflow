@@ -1,10 +1,12 @@
 import {
+  bigint,
   check,
   date,
   index,
   integer,
   jsonb,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -117,5 +119,55 @@ export const settings = pgTable(
     check("settings_buffer_check", sql`${table.bufferMinutes} between 0 and 1440`),
     check("settings_week_start_check", sql`${table.weekStartsOn} between 0 and 6`),
     check("settings_revision_check", sql`${table.revision} > 0`),
+  ],
+);
+
+/**
+ * G5: a row-lockable per-user cursor. Every task writer must acquire the same
+ * row FOR UPDATE before writing a task; the increment and change log COMMIT
+ * together, preventing sequence allocation/commit-order inversions.
+ */
+export const syncState = pgTable("sync_state", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  lastCursor: bigint("last_cursor", { mode: "number" }).notNull().default(0),
+});
+
+export const changeLog = pgTable(
+  "change_log",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    cursor: bigint("cursor", { mode: "number" }).notNull(),
+    entityId: uuid("entity_id").notNull(),
+    operation: varchar("operation", { length: 8 }).notNull(),
+    revision: integer("revision").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.cursor] }),
+    index("change_log_user_entity_idx").on(table.userId, table.entityId),
+    check("change_log_operation_check", sql`${table.operation} in ('create','update','delete')`),
+    check("change_log_cursor_check", sql`${table.cursor} > 0`),
+  ],
+);
+
+export const processedMutations = pgTable(
+  "processed_mutations",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    clientMutationId: uuid("client_mutation_id").notNull(),
+    requestHash: varchar("request_hash", { length: 64 }).notNull(),
+    result: jsonb("result").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.clientMutationId] }),
+    index("processed_mutations_created_idx").on(table.createdAt),
   ],
 );

@@ -8,6 +8,13 @@
       "when": 1791744029932,
       "tag": "0000_odd_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791772105213,
+      "tag": "0001_even_wonder_man",
+      "breakpoints": true
     }
   ]
 }

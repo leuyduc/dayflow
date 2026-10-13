@@ -426,6 +426,83 @@ button:disabled {
   border-radius: 9px;
   padding: 9px 15px;
 }
+.day-picks {
+  border: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.day-picks label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+.day-picks input {
+  width: auto;
+}
+.view-switch button[aria-pressed="true"] {
+  background: #edf4ff;
+  color: #1958ae;
+  font-weight: 700;
+}
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.month-cell {
+  min-height: 72px;
+  border: 1px solid #e1e9f1;
+  background: white;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: left;
+  color: #1c2d42;
+}
+.month-cell.outside {
+  color: #8b9aab;
+}
+.month-cell small {
+  display: block;
+  color: #5d7590;
+  margin-top: 6px;
+}
+.place-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.place-form input {
+  width: auto;
+}
+:root[data-theme="dark"] {
+  color: #e7eef8;
+  background: #121820;
+}
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] .sidebar,
+:root[data-theme="dark"] .topbar,
+:root[data-theme="dark"] .task-item,
+:root[data-theme="dark"] .month-cell,
+:root[data-theme="dark"] .message-card,
+:root[data-theme="dark"] .capture-form,
+:root[data-theme="dark"] .login-panel,
+:root[data-theme="dark"] .edit-panel {
+  background: #1b2430;
+  color: #e7eef8;
+  border-color: #2c3a4c;
+}
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background: #121820;
+  color: #e7eef8;
+  border-color: #3a4b60;
+}
 @media (max-width: 760px) {
   .capture-row {
     flex-direction: column;

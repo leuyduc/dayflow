@@ -11,6 +11,19 @@ if (!executablePath) throw new Error("Chrome executable not found");
 
 const browser = await chromium.launch({ executablePath, headless: true });
 let tasks = [];
+let cursor = 0;
+const changes = [];
+function record(operation, task) {
+  changes.push({
+    cursor: ++cursor,
+    entityId: task.id,
+    operation,
+    payload:
+      operation === "delete"
+        ? { id: task.id, revision: task.revision, deletedAt: new Date().toISOString() }
+        : { ...task },
+  });
+}
 let loggedIn = false;
 const errors = [];
 try {
@@ -44,6 +57,49 @@ try {
     } else if (path === "/api/auth/logout" && method === "POST") {
       loggedIn = false;
       data = { ok: true };
+    } else if (path === "/api/sync/bootstrap" && method === "GET") {
+      if (!loggedIn) {
+        status = 401;
+        data = { error: "unauthorized" };
+      } else data = { tasks, cursor };
+    } else if (path === "/api/sync/pull" && method === "GET") {
+      if (!loggedIn) {
+        status = 401;
+        data = { error: "unauthorized" };
+      } else {
+        const after = Number(new URL(request.url()).searchParams.get("cursor") ?? 0);
+        const batch = changes.filter((change) => change.cursor > after).slice(0, 100);
+        data = {
+          changes: batch,
+          nextCursor: batch.at(-1)?.cursor ?? after,
+          latestCursor: cursor,
+          hasMore: changes.filter((change) => change.cursor > after).length > batch.length,
+        };
+      }
+    } else if (path === "/api/sync/push" && method === "POST") {
+      if (!loggedIn) {
+        status = 401;
+        data = { error: "unauthorized" };
+      } else if (request.headers()["x-dayflow-csrf"] !== "only-test-csrf") {
+        status = 403;
+        data = { error: "csrf" };
+      } else {
+        const operation = request.postDataJSON().operations[0];
+        const current = tasks.find((task) => task.id === operation.taskId);
+        if (!current) data = { results: [{ kind: "not-found" }] };
+        else if (current.revision !== operation.expectedRevision)
+          data = { results: [{ kind: "conflict", current }] };
+        else {
+          const task = {
+            ...current,
+            ...operation.patch,
+            revision: current.revision + 1,
+          };
+          tasks = tasks.map((item) => (item.id === task.id ? task : item));
+          record("update", task);
+          data = { results: [{ kind: "ok", task, revision: task.revision }] };
+        }
+      }
     } else if (path.startsWith("/api/tasks")) {
       if (!loggedIn) {
         status = 401;
@@ -72,6 +128,7 @@ try {
               updatedAt: now,
             };
             tasks = [task];
+            record("create", task);
             status = 201;
             data = { task };
           } else if (method === "PATCH") {
@@ -89,8 +146,10 @@ try {
                     : tasks[0].completedAt,
             };
             tasks = [task];
+            record("update", task);
             data = { task };
           } else if (method === "DELETE") {
+            if (tasks[0]) record("delete", { ...tasks[0], revision: tasks[0].revision + 1 });
             tasks = [];
             data = { deleted: true };
           }

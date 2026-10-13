@@ -7,6 +7,12 @@ import { z } from "zod";
 import type { AuthStore, SessionRecord } from "./types.js";
 import type { TaskStore } from "../tasks/types.js";
 import { registerTaskRoutes } from "../tasks/routes.js";
+import type { SyncStore } from "../sync/types.js";
+import { registerSyncRoutes } from "../sync/routes.js";
+import type { BackupStore } from "../backup/types.js";
+import { registerBackupRoutes } from "../backup/routes.js";
+import type { SettingsStore } from "../settings/types.js";
+import { registerSettingsRoutes } from "../settings/routes.js";
 
 const COOKIE = "dayflow_session";
 const SESSION_AGE_SECONDS = 60 * 60 * 24 * 7;
@@ -21,6 +27,9 @@ const credentialsSchema = z
 export interface AuthConfig {
   store: AuthStore;
   tasks?: TaskStore;
+  sync?: SyncStore;
+  backup?: BackupStore;
+  settings?: SettingsStore;
   csrfSecret: string;
   allowedOrigin: string;
   cookieSecure?: boolean;
@@ -144,21 +153,25 @@ export async function registerAuth(app: FastifyInstance, options: AuthConfig): P
     return { ok: true };
   });
 
+  const routeAuth = {
+    owner: async (request: FastifyRequest) => (await readSession(request))?.record.userId ?? null,
+    canMutate: async (request: FastifyRequest) => {
+      if (!matchesOrigin(request, options.allowedOrigin)) return false;
+      const session = await readSession(request);
+      return (
+        !!session &&
+        sameSecret(
+          request.headers["x-dayflow-csrf"],
+          csrfForTokenHash(options.csrfSecret, session.hash),
+        )
+      );
+    },
+  };
+  if (options.sync) registerSyncRoutes(app, options.sync, routeAuth);
+  if (options.backup) registerBackupRoutes(app, options.backup, routeAuth);
+  if (options.settings) registerSettingsRoutes(app, options.settings, routeAuth);
   if (options.tasks) {
-    registerTaskRoutes(app, options.tasks, {
-      owner: async (request) => (await readSession(request))?.record.userId ?? null,
-      canMutate: async (request) => {
-        if (!matchesOrigin(request, options.allowedOrigin)) return false;
-        const session = await readSession(request);
-        return (
-          !!session &&
-          sameSecret(
-            request.headers["x-dayflow-csrf"],
-            csrfForTokenHash(options.csrfSecret, session.hash),
-          )
-        );
-      },
-    });
+    registerTaskRoutes(app, options.tasks, routeAuth);
   } else {
     // Retain the G3 read-only contract when the task store is not configured.
     app.get("/api/tasks", async (request, reply) => {

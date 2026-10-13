@@ -1,4 +1,6 @@
 # DAYFLOW V2 — MASTER PLAN
+
+> **CẬP NHẬT HIỆN TRẠNG (2026-10-13):** tài liệu này lưu định hướng/thiết kế ngày 12/10, **không còn là bảng tiến độ thực tế**. G2–G8 đã có code/QA trong checkout Windows; các dòng "NOT STARTED" bên dưới là lịch sử. Kế hoạch thực thi **hiện tại**: `docs/V2_ACTIVE_MASTER_PLAN_20261013.md` và `.chatgpt/STATE.md`. ChatGPT trực tiếp code qua MCP trong `D:\projects\dayflow`; Muse/OpenCode là hướng đã loại bỏ. Chưa có Gate sản xuất được tự động duyệt, chưa commit/push code local.
 > Revision: 1.0 | 2026-10-12 | Status: approved direction, gated execution | Repository: `leuyduc/dayflow` | Design branch: `design/linux-fullstack-v2`
 
 ## 1. Product and operating objective

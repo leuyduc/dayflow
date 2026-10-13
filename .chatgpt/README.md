@@ -1,8 +1,10 @@
 # ChatGPT-only Continuity Protocol — DayFlow
 
+**Active local checkpoint (2026-10-13): `D:\projects\dayflow\.chatgpt\STATE.md` via Windows MCP.** The former `C:\Users\ABC\dayflow` copy is a preserved fallback; never use it for ongoing edits. The remote GitHub `feat/g5-online-sync` branch now includes G6/G7/G8 work via pushed feature commit `a10afb6`; always check actual remote/local SHA and preserve any newer uncommitted D edits.
+
 **Applies only to ChatGPT acting as operator/coordinator. It is NOT an instruction to Muse/OpenCode.**
 
-OpenCode/Muse independently manages its context, cache, and agent sessions. **Do not** make Muse re-read plans, logs, lessons, or all specs after every step merely to compensate for ChatGPT's context limits. Do not inject this directory into Muse prompts or treat its files as Muse-required input.
+OpenCode/Muse has been retired from the DayFlow implementation workflow. This directory is the direct ChatGPT operator continuity checkpoint, not a separate coding-agent cache.
 
 ## Mandatory ChatGPT workflow
 At the start of every new/resumed ChatGPT session, or after context becomes uncertain:
@@ -12,7 +14,7 @@ At the start of every new/resumed ChatGPT session, or after context becomes unce
 4. Distinguish **observed evidence**, **user approvals**, **pending approvals**, **hypotheses**, and **blocked tests**.
 5. Before operations with side effects, check scope, source-of-truth branch, permissions, backups/rollback, security issues, and whether the action was specifically approved.
 6. After each meaningful action or gate substep, update: (a) snapshot of complete project milestones G0–G9 in STATE; (b) concise dated journal entry with action, verification, failures, rollback, next step; (c) LESSONS only when a real new lesson was learned.
-7. Verify the files were actually committed/readable on the intended branch. If persistence fails, state that clearly to the user and provide the necessary recovery text instead of claiming it was saved.
+7. Verify local D files were written and readable. Only when commit/push is explicitly authorized should the files be verified as committed/readable on the intended GitHub branch; otherwise report them as uncommitted local state. If persistence fails, state that clearly and provide recovery text.
 
 ## Durability rules
 - These are ChatGPT's operator notes, **not Muse memory**.
